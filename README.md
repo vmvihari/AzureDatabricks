@@ -6,19 +6,19 @@ Welcome to the Azure Databricks Knowledge Repository! This repository contains a
 
 The course is structured into 7 core modules, blending theory with incremental, practical project tasks.
 
-- **[Module 1: Cloud Fundamentals & Azure Setup](docs/module-01-fundamentals/)**
+- **[Module 1: Cloud Fundamentals & Azure Setup](docs/module-01-fundamentals/README.md)**
   - Architecture, Medallion framework, and initial Azure resource provisioning.
-- **[Module 2: PySpark & Comprehensive Data Ingestion](docs/module-02-ingestion/)**
+- **[Module 2: PySpark & Comprehensive Data Ingestion](docs/module-02-ingestion/README.md)**
   - Reading from Files, JDBC (Databases), and HTTP (REST APIs).
-- **[Module 3: Delta Lake & Batch Medallion Architecture](docs/module-03-medallion-and-ml/)**
+- **[Module 3: Delta Lake & Batch Medallion Architecture](docs/module-03-medallion-and-ml/README.md)**
   - Building Bronze, Silver, Gold layers; Fraud API integration and ML modeling.
-- **[Module 4: Advanced Ingestion & Delta Live Tables (DLT)](docs/module-04-dlt/)**
+- **[Module 4: Advanced Ingestion & Delta Live Tables (DLT)](docs/module-04-dlt/README.md)**
   - Auto Loader, Change Data Capture (SCD Type 1/2), and declarative pipelines.
-- **[Module 5: Performance Tuning & Optimization](docs/module-05-performance/)**
+- **[Module 5: Performance Tuning & Optimization](docs/module-05-performance/README.md)**
   - Liquid Clustering, Z-ORDER, AQE, and handling data skew.
-- **[Module 6: Data Governance with Unity Catalog](docs/module-06-governance/)**
+- **[Module 6: Data Governance with Unity Catalog](docs/module-06-governance/README.md)**
   - Metastore setup, RBAC, Data Lineage, and PII masking.
-- **[Module 7: Orchestration, Monitoring & CI/CD](docs/module-07-ops-cicd/)**
+- **[Module 7: Orchestration, Monitoring & CI/CD](docs/module-07-ops-cicd/README.md)**
   - Databricks Workflows, Azure Monitor, Git integration, and GitHub Actions.
 
 ## 🚀 The Project: Mortgage Data Platform (MDP)
@@ -53,4 +53,4 @@ A national mortgage lender needs a scalable data lakehouse to process daily loan
 ```
 
 ## Getting Started
-Navigate to **[Module 1](docs/module-01-fundamentals/)** to begin the curriculum. Follow the lessons sequentially, and complete the **Project Task** at the end of each module to build the platform.
+Navigate to **[Module 1](docs/module-01-fundamentals/README.md)** to begin the curriculum. Follow the lessons sequentially, and complete the **Project Task** at the end of each module to build the platform.
