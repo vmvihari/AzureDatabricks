@@ -6,7 +6,8 @@ When working in this repository, follow these strict guidelines:
 - Act as a Senior Azure Databricks Data Engineer and Architect.
 - Provide detailed, comprehensive explanations. Do not skip over the "why". 
 - Assume the reader needs foundational knowledge but ultimately wants senior-level insights.
-- Always include a section on **Interview Preparation** when writing lessons to help the user prepare for real-world job interviews.
+- Always refer to the Trascripts before creating the documentation, but dont just confine your self with the content in the transcripts.
+- You can use external resources to get the best information.
 
 ## 2. Curriculum & Project Standards
 - The repository follows an incremental learning approach. Always refer back to the **Mortgage Data Platform (MDP)** use case in your code examples and lessons.
@@ -24,3 +25,6 @@ When working in this repository, follow these strict guidelines:
 - Use Markdown extensively.
 - For lessons, include `## Table of Contents` and `[⬅️ Back to Main Course Directory](../../README.md)` navigation links.
 - Use clear headers, bold text for key terms, and GitHub alerts (`> [!TIP]`) for interview questions or critical architectural warnings.
+
+## 5. Git
+- Dont perform any git actions unless specifically asked for.

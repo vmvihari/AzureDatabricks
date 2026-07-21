@@ -1,5 +1,14 @@
 # Lesson 1.2: Azure Resources & Infrastructure Overview
 
+## Table of Contents
+- [1. Introduction to the Cloud Ecosystem](#1-introduction-to-the-cloud-ecosystem)
+- [2. Azure Resource Groups (The Organizational Container)](#2-azure-resource-groups-the-organizational-container)
+- [3. Azure Data Lake Storage (ADLS) Gen2](#3-azure-data-lake-storage-adls-gen2)
+- [4. Azure Databricks Workspace (Compute & Collaboration)](#4-azure-databricks-workspace-compute--collaboration)
+- [5. Senior-Level Insights: Networking & Enterprise Security](#5-senior-level-insights-networking--enterprise-security)
+- [6. 🎯 Interview Preparation](#6--interview-preparation)
+
+
 ## 1. Introduction to the Cloud Ecosystem
 Before writing a single line of PySpark code, a Data Engineer must understand the underlying infrastructure. In Azure, Databricks does not exist in a vacuum; it is part of a tightly integrated ecosystem. We will focus on the three foundational pillars required for the Mortgage Data Platform: Resource Groups, Storage, and Compute.
 
@@ -63,3 +72,5 @@ To execute PySpark code, you spin up a cluster.
 
 **Q3: How do you optimize costs for Databricks in a production environment?**
 **Answer:** "I strictly enforce the use of **Job Clusters** for automated pipelines instead of All-Purpose clusters. Job clusters are billed at a significantly lower rate and terminate automatically upon completion. Additionally, I use auto-scaling to dynamically adjust worker nodes based on workload, and leverage Azure Spot Instances for non-critical, fault-tolerant workloads to save up to 80% on VM costs."
+
+[⬅️ Back to Main Course Directory](../../README.md)

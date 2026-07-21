@@ -1,5 +1,12 @@
 # Lesson 1.1: Data Analytics in Mortgage & Medallion Architecture
 
+## Table of Contents
+- [1. Introduction: The Evolution of Data Architecture](#1-introduction-the-evolution-of-data-architecture)
+- [2. The Medallion Architecture (Deep Dive)](#2-the-medallion-architecture-deep-dive)
+- [3. Senior-Level Insights: Designing for Production](#3-senior-level-insights-designing-for-production)
+- [4. 🎯 Interview Preparation](#4--interview-preparation)
+
+
 ## 1. Introduction: The Evolution of Data Architecture
 To understand Azure Databricks and the Lakehouse, you must understand the problem it solves. Historically, data architecture evolved through two main paradigms before the Lakehouse:
 1. **Data Warehouses (e.g., Teradata, Snowflake):** Great for structured data and ACID transactions, but highly rigid, expensive, and terrible for Machine Learning or unstructured data (images, JSON).
@@ -59,3 +66,5 @@ When designing this architecture, senior engineers must consider:
 
 **Q3: How do you handle schema drift in your pipelines?**
 **Answer:** "In the Bronze layer, I enable Delta Lake's `mergeSchema` option to automatically capture new columns added by the source system. However, in the Silver layer, I strictly enforce schemas to protect data quality. If an unexpected schema change occurs in Silver, the pipeline correctly fails, triggering an alert for the engineering team to review the upstream change."
+
+[⬅️ Back to Main Course Directory](../../README.md)

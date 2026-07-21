@@ -1,5 +1,11 @@
 # Project Task 1: Environment Provisioning
 
+## Table of Contents
+- [Objective](#objective)
+- [Instructions](#instructions)
+- [Acceptance Criteria](#acceptance-criteria)
+
+
 ## Objective
 Simulate the provisioning of the Azure environment for the Mortgage Data Platform.
 
@@ -27,3 +33,5 @@ Since this is a simulated local environment, we will represent our cloud infrast
 ## Acceptance Criteria
 - [ ] You understand the purpose of Bronze, Silver, and Gold layers.
 - [ ] The `config/secrets_mock.json` file is created and contains the mock secrets.
+
+[⬅️ Back to Main Course Directory](../../README.md)

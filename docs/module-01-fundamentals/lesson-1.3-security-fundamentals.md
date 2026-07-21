@@ -1,5 +1,13 @@
 # Lesson 1.3: Security Fundamentals & Secret Management
 
+## Table of Contents
+- [1. Introduction: Zero Trust in Data Engineering](#1-introduction-zero-trust-in-data-engineering)
+- [2. Azure Key Vault (The Secure Vault)](#2-azure-key-vault-the-secure-vault)
+- [3. Connecting Databricks to Key Vault (Secret Scopes)](#3-connecting-databricks-to-key-vault-secret-scopes)
+- [4. Senior-Level Insights: Service Principals & Managed Identities](#4-senior-level-insights-service-principals--managed-identities)
+- [5. 🎯 Interview Preparation](#5--interview-preparation)
+
+
 ## 1. Introduction: Zero Trust in Data Engineering
 In the Mortgage industry, a data breach involving PII (Social Security Numbers, income statements) is catastrophic. A Data Engineer must adopt a **Zero Trust** mindset. This means assuming that even internal network traffic is hostile and that notebook code will eventually be read by unauthorized eyes. 
 
@@ -63,3 +71,5 @@ A **Service Principal** is essentially a "system account" (like a robot user) in
 
 **Q3: What is a Databricks Secret Scope, and what are the two types?**
 **Answer:** "A secret scope is a secure container for storing secrets. There are two types: Databricks-backed scopes (where secrets are stored directly in the Databricks encrypted database) and Azure Key Vault-backed scopes (where Databricks simply acts as a passthrough to retrieve secrets securely stored in Azure Key Vault). In enterprise environments, AKV-backed scopes are heavily preferred for centralized security management."
+
+[⬅️ Back to Main Course Directory](../../README.md)
