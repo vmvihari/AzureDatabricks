@@ -1,0 +1,40 @@
+# Ignored directories
+Transcripts/
+
+# Python / PySpark
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.env
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Databricks
+.databricks/
+.databricks-connect
+
+# Data Files (Local testing)
+*.csv
+*.parquet
+*.snappy
+*.json
+_delta_log/
+*.crc
+
+# Secrets and Configs
+config/secrets*.json
+secrets.json
+
+# IDEs and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
