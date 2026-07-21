@@ -33,6 +33,10 @@ A national mortgage lender needs a scalable data lakehouse to process daily loan
 3. Apply an AI prediction model to determine loan default risk.
 4. Securely expose this aggregated risk data to downstream analysts using Unity Catalog.
 
+### 🛠️ Data Generation Utility
+To build a realistic Lakehouse, you need massive amounts of data. Instead of bloating this repository with gigabytes of CSV files, we have provided a dynamic **[Data Generator Utility](apps/data-generator/README.md)**. 
+Before starting the modules, you can use this utility to locally generate millions of rows of mock loan applications, fraud blacklists, and CDC servicing events directly into your simulated Data Lake!
+
 ### Repository Structure
 ```text
 .
@@ -41,6 +45,7 @@ A national mortgage lender needs a scalable data lakehouse to process daily loan
 │   ├── module-02-ingestion/
 │   └── ...
 └── apps/                   # Project Codebase
+    ├── data-generator/         # Python utility to mock massive datasets
     └── mortgage-data-platform/
         ├── src/            # PySpark/SQL source code
         │   ├── bronze/     # Raw Ingestion (Auto Loader, API Calls)
