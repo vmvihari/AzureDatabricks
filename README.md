@@ -24,7 +24,7 @@ The course is structured into 7 core modules, blending theory with incremental, 
 ## 🚀 The Project: Mortgage Data Platform (MDP)
 
 Throughout these modules, you will incrementally build the **Mortgage Data Platform**.
-The codebase is located in the `apps/mortgage-data-platform` directory.
+The codebase and architectural blueprint are located in the **[apps/mortgage-data-platform](apps/mortgage-data-platform/README.md)** directory.
 
 ### Business Case
 A national mortgage lender needs a scalable data lakehouse to process daily loan applications. You will:
