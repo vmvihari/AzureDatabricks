@@ -34,4 +34,4 @@ Since this is a simulated local environment, we will represent our cloud infrast
 - [ ] You understand the purpose of Bronze, Silver, and Gold layers.
 - [ ] The `config/secrets_mock.json` file is created and contains the mock secrets.
 
-[⬅️ Back to Main Course Directory](../../README.md)
+[⬅️ Previous: Lesson 1.3: Security Fundamentals](lesson-1.3-security-fundamentals.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 2: PySpark & Data Ingestion](../module-02-ingestion/README.md)

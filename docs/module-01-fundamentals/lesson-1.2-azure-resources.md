@@ -73,4 +73,4 @@ To execute PySpark code, you spin up a cluster.
 **Q3: How do you optimize costs for Databricks in a production environment?**
 **Answer:** "I strictly enforce the use of **Job Clusters** for automated pipelines instead of All-Purpose clusters. Job clusters are billed at a significantly lower rate and terminate automatically upon completion. Additionally, I use auto-scaling to dynamically adjust worker nodes based on workload, and leverage Azure Spot Instances for non-critical, fault-tolerant workloads to save up to 80% on VM costs."
 
-[⬅️ Back to Main Course Directory](../../README.md)
+[⬅️ Previous: Lesson 1.1: Data Analytics & Medallion Architecture](lesson-1.1-intro-architecture.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Lesson 1.3: Security Fundamentals](lesson-1.3-security-fundamentals.md)

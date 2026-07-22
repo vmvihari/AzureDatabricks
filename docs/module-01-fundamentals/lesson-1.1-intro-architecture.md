@@ -67,4 +67,4 @@ When designing this architecture, senior engineers must consider:
 **Q3: How do you handle schema drift in your pipelines?**
 **Answer:** "In the Bronze layer, I enable Delta Lake's `mergeSchema` option to automatically capture new columns added by the source system. However, in the Silver layer, I strictly enforce schemas to protect data quality. If an unexpected schema change occurs in Silver, the pipeline correctly fails, triggering an alert for the engineering team to review the upstream change."
 
-[⬅️ Back to Main Course Directory](../../README.md)
+[⬅️ Previous: Module 1 Overview](README.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Lesson 1.2: Azure Resources](lesson-1.2-azure-resources.md)

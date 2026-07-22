@@ -72,4 +72,4 @@ A **Service Principal** is essentially a "system account" (like a robot user) in
 **Q3: What is a Databricks Secret Scope, and what are the two types?**
 **Answer:** "A secret scope is a secure container for storing secrets. There are two types: Databricks-backed scopes (where secrets are stored directly in the Databricks encrypted database) and Azure Key Vault-backed scopes (where Databricks simply acts as a passthrough to retrieve secrets securely stored in Azure Key Vault). In enterprise environments, AKV-backed scopes are heavily preferred for centralized security management."
 
-[⬅️ Back to Main Course Directory](../../README.md)
+[⬅️ Previous: Lesson 1.2: Azure Resources](lesson-1.2-azure-resources.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Project Task 1](project-task-01.md)

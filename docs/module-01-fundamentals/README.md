@@ -8,4 +8,4 @@ In this module, you will learn the foundational concepts of modern Data Analytic
 - [Lesson 1.3: Security Fundamentals](lesson-1.3-security-fundamentals.md)
 - [Project Task 1: Environment Provisioning](project-task-01.md)
 
-[?? Back to Main Course Directory](../../README.md)
+[⬅️ Previous: Main Course Directory](../../README.md) | [➡️ Next: Lesson 1.1: Data Analytics & Medallion Architecture](lesson-1.1-intro-architecture.md)
