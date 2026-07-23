@@ -1,11 +1,13 @@
 # Module 4: Advanced Ingestion & Delta Live Tables (DLT)
 
-In this module, you will transition from batch processing to streaming and incremental ingestion. You will master Auto Loader and learn how to build declarative pipelines using Delta Live Tables with built-in Change Data Capture (CDC).
+In this module, you will transition from writing imperative PySpark batch jobs to building declarative, streaming data pipelines using Delta Live Tables (DLT). You will master Auto Loader, Data Quality Expectations, and Change Data Capture (CDC).
 
 ## Table of Contents
-- [Lesson 4.1: Incremental Ingestion with Auto Loader](lesson-4.1-auto-loader.md)
-- [Lesson 4.2: Introduction to Delta Live Tables](lesson-4.2-delta-live-tables.md)
-- [Lesson 4.3: Change Data Capture (CDC) - SCD Type 1 and 2](lesson-4.3-cdc-scd.md)
-- [Project Task 4: DLT Pipeline with CDC](project-task-04.md)
+- [Lesson 4.1: Auto Loader and Structured Streaming](lesson-4.1-autoloader-streaming.md)
+- [Lesson 4.2: Introduction to Delta Live Tables (DLT)](lesson-4.2-intro-to-dlt.md)
+- [Lesson 4.3: Data Quality with DLT Expectations](lesson-4.3-dlt-expectations.md)
+- [Lesson 4.4: Change Data Capture (CDC) & SCDs](lesson-4.4-cdc-scd-type-1-2.md)
+- [Project Task 4: The DLT Credit Score Pipeline](project-task-04.md)
 
-[?? Back to Main Course Directory](../../README.md)
+---
+[⬅️ Previous: Project Task 3](../module-03-medallion-and-ml/project-task-03.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Lesson 4.1](lesson-4.1-autoloader-streaming.md)

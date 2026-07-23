@@ -10,4 +10,4 @@ In this module, you will learn PySpark fundamentals and explore all major ingest
 - [Lesson 2.5: PySpark DataFrame Transformations](lesson-2.5-pyspark-transformations.md)
 - [Project Task 2: Data Extraction Scripts](project-task-02.md)
 
-[?? Back to Main Course Directory](../../README.md)
+[⬅️ Previous: Project Task 1](../module-01-fundamentals/project-task-01.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Lesson 2.1](lesson-2.1-spark-architecture.md)

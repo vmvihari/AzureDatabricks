@@ -18,8 +18,10 @@ The course is structured into 7 core modules, blending theory with incremental, 
   - Liquid Clustering, Z-ORDER, AQE, and handling data skew.
 - **[Module 6: Data Governance with Unity Catalog](docs/module-06-governance/README.md)**
   - Metastore setup, RBAC, Data Lineage, and PII masking.
-- **[Module 7: Orchestration, Monitoring & CI/CD](docs/module-07-ops-cicd/README.md)**
+- [Module 7: Orchestration, Monitoring & CI/CD](docs/module-07-ops-cicd/README.md)
   - Databricks Workflows, Azure Monitor, Git integration, and GitHub Actions.
+- **[Module 8: Local Development & Validation](docs/module-08-local-dev-and-testing/README.md)**
+  - Pytest, Databricks Connect, and Databricks Asset Bundles (DABs).
 
 ## 🚀 The Project: Mortgage Data Platform (MDP)
 

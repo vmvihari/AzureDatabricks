@@ -1,12 +1,12 @@
 # Module 7: Orchestration, Monitoring & CI/CD
 
-In this module, you will learn how to operationalize the Mortgage Data Platform. You will automate Databricks Workflows, configure Azure Monitor for alerting, and build robust CI/CD pipelines using GitHub Actions.
+Welcome to the final module! In this module, you will learn how to take your optimized, secure Lakehouse pipelines and operationalize them for a true production environment using Databricks Workflows, Azure Monitor, Git Folders, and GitHub Actions.
 
 ## Table of Contents
-- [Lesson 7.1: Databricks Workflows (Job Orchestration & Scheduling)](lesson-7.1-databricks-workflows.md)
-- [Lesson 7.2: Monitoring and Logging (Azure Monitor, Log Analytics)](lesson-7.2-monitoring-logging.md)
-- [Lesson 7.3: Git Folders Integration & Branching Strategies](lesson-7.3-git-folders.md)
-- [Lesson 7.4: CI/CD Automation with GitHub Actions](lesson-7.4-cicd-github-actions.md)
-- [Project Task 7: GitHub Actions CI/CD Pipeline Configuration](project-task-07.md)
+- [Lesson 7.1: Databricks Workflows and Task Orchestration](lesson-7.1-databricks-workflows.md)
+- [Lesson 7.2: Monitoring and Alerting](lesson-7.2-monitoring-and-alerting.md)
+- [Lesson 7.3: Git Integration and CI/CD](lesson-7.3-git-and-cicd.md)
+- [Project Task 7: Operationalizing the Credit Bureau Feed](project-task-07.md)
 
-[?? Back to Main Course Directory](../../README.md)
+---
+[⬅️ Previous: Project Task 6](../module-06-governance/project-task-06.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Lesson 7.1](lesson-7.1-databricks-workflows.md)

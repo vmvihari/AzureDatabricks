@@ -59,7 +59,46 @@ To execute PySpark code, you spin up a cluster.
 
 ---
 
+## 🛠️ Action Step: Provisioning the Data Lake
+
+In a true enterprise production environment, you never provision resources manually using the Azure Portal (a practice known as "ClickOps"). Manual provisioning leads to human error, environment drift, and security vulnerabilities. 
+
+**Production Standard:** Enterprise environments use **Infrastructure as Code (IaC)**, such as Terraform or Azure Bicep, to provision resources. This ensures deployments are version-controlled, peer-reviewed, and completely reproducible.
+
+However, to keep this curriculum focused strictly on Data Engineering and Databricks (and avoid a detour into Terraform state management), we will simulate the deployment using the Azure CLI. This mirrors the exact programmatic API calls Terraform would make.
+
+### Provisioning via Azure CLI
+Open your local terminal or the Azure Cloud Shell and run the following commands to provision the storage account precisely to our Enterprise Standards:
+
+1. **Create the Resource Group:**
+   ```bash
+   az group create --name rg-mortgage-prod --location eastus
+   ```
+2. **Create the Storage Account (ADLS Gen2):**
+   *Note: We strictly enforce `--enable-hierarchical-namespace true` (HNS) and use standard LRS to optimize cost. We also explicitly disable public access.*
+   ```bash
+   az storage account create \
+       --name stmortgagedataprod \
+       --resource-group rg-mortgage-prod \
+       --location eastus \
+       --sku Standard_LRS \
+       --enable-hierarchical-namespace true \
+       --allow-blob-public-access false
+   ```
+3. **Create the Medallion Containers:**
+   ```bash
+   az storage fs create -n bronze --account-name stmortgagedataprod --public-access off
+   az storage fs create -n silver --account-name stmortgagedataprod --public-access off
+   az storage fs create -n gold --account-name stmortgagedataprod --public-access off
+   ```
+
+*(If you do not have the Azure CLI installed, you may manually provision this in the Azure Portal. If doing so, you must explicitly select the "Advanced" tab during creation, check the box for "Enable hierarchical namespace", and explicitly disable public blob access in the "Configuration" tab).*
+
+---
+
 ## 6. 🎯 Interview Preparation
+
+
 
 > [!TIP]
 > **Common Interview Questions on Cloud Infrastructure**

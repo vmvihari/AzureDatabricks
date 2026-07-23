@@ -58,6 +58,25 @@ A **Service Principal** is essentially a "system account" (like a robot user) in
 
 ---
 
+## 🛠️ Action Step (CLI): Configure Secret Scopes
+We must provision a real Databricks Secret Scope to store our Fraud API token securely.
+
+1. Open your terminal and authenticate using the Databricks CLI:
+   ```bash
+   databricks configure --token
+   ```
+2. Create a new secret scope for the mortgage platform:
+   ```bash
+   databricks secrets create-scope mortgage-secrets
+   ```
+3. Store the API token for the Fraud Detection service securely:
+   ```bash
+   databricks secrets put-secret mortgage-secrets fraud-api-token
+   # (When prompted, enter a dummy string like 'abc-123' for now)
+   ```
+
+---
+
 ## 5. 🎯 Interview Preparation
 
 > [!TIP]
