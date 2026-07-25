@@ -60,16 +60,71 @@ Let's build the ETL pipeline that transforms our raw loan data into the Silver l
    - Ensure column names are strictly `snake_case`.
 4. Write the resulting DataFrame to `abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans` in Delta format using `mode("overwrite")` (for this initial batch load).
 
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, regexp_replace
+
+spark = SparkSession.builder.appName("CleanseLoansSilver").getOrCreate()
+
+def cleanse_loans(df):
+    return (df.dropDuplicates(["loan_id"])
+              .filter(col("applicant_ssn").isNotNull())
+              .withColumn("applicant_ssn", regexp_replace(col("applicant_ssn"), "-", "")))
+
+if __name__ == "__main__":
+    df_bronze = spark.read.format("delta").load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans")
+    df_silver = cleanse_loans(df_bronze)
+    
+    (df_silver.write
+        .format("delta")
+        .mode("overwrite")
+        .save("abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans"))
+```
+
 ---
 
 ## 5. 🛠️ Action Step: Validation & Testing
 
-As discussed in [Lesson 2.6: Local Unit Testing](../module-02-ingestion/lesson-2.6-local-pyspark-and-pytest.md), you must test your transformation logic locally before deploying.
+As discussed in Module 2, you must test your transformation logic locally before deploying.
 
 1. Navigate to `apps/mortgage-data-platform/tests/` (create it if it doesn't exist).
 2. Create `test_silver_cleansing.py`.
 3. Write a `pytest` test that passes a mock DataFrame containing a null SSN to your cleansing function, and asserts that the resulting DataFrame has dropped that row.
 4. Run `pytest tests/test_silver_cleansing.py` in your local terminal to validate your code.
+
+```python
+import os
+import sys
+import pytest
+from pyspark.sql import SparkSession
+from pyspark.sql import Row
+from src.silver.cleansed_loans import cleanse_loans
+
+# Fix for Windows: Ensure Spark uses the current Python executable and IPv4 to avoid Socket errors
+os.environ['PYSPARK_PYTHON'] = sys.executable
+os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
+os.environ['_JAVA_OPTIONS'] = "-Djava.net.preferIPv4Stack=true"
+
+@pytest.fixture(scope="session")
+def spark():
+    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
+
+def test_cleansing_drops_null_ssns_and_formats_strings(spark):
+    mock_data = [
+        Row(loan_id="L-01", applicant_ssn="123-45-6789"),
+        Row(loan_id="L-02", applicant_ssn=None), # Should be dropped
+        Row(loan_id="L-01", applicant_ssn="123-45-6789") # Duplicate, should be dropped
+    ]
+    df_in = spark.createDataFrame(mock_data)
+    
+    df_clean = cleanse_loans(df_in)
+    
+    # Assert duplicates and nulls are dropped
+    assert df_clean.count() == 1
+    
+    # Assert hyphens are removed
+    assert df_clean.first()["applicant_ssn"] == "123456789"
+```
 
 ---
 

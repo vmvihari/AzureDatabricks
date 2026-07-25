@@ -56,6 +56,34 @@ Let's integrate our API data with our core pipeline.
 5. Create a new column named `is_fraud_flagged`. If the right side of the join is null, the flag is `False`; otherwise, `True`.
 6. Write the resulting DataFrame back out, overwriting the `silver_loans` Delta table so it now includes the new fraud flag.
 
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import broadcast, col, when
+
+spark = SparkSession.builder.appName("FraudFlagging").getOrCreate()
+
+def flag_fraud(df_loans, df_blacklist):
+    return df_loans.join(
+        broadcast(df_blacklist),
+        df_loans.applicant_ssn == df_blacklist.ssn,
+        "left"
+    ).withColumn(
+        "is_fraud_flagged",
+        when(col("ssn").isNotNull(), True).otherwise(False)
+    ).drop("ssn")
+
+if __name__ == "__main__":
+    df_silver = spark.read.format("delta").load("abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans")
+    df_black = spark.read.format("json").load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/fraud_blacklist/blacklist_today.json")
+    
+    df_flagged = flag_fraud(df_silver, df_black)
+    
+    (df_flagged.write
+        .format("delta")
+        .mode("overwrite")
+        .save("abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans"))
+```
+
 ---
 
 ## 🛠️ Action Step: Validation & Testing
@@ -67,6 +95,44 @@ Just like the cleansing pipeline, this integration script should be tested befor
 3. Write a `pytest` test that creates two mock DataFrames: one representing `silver_loans` and one representing the `blacklist`. 
 4. Pass them to your flagging function and assert that the resulting DataFrame correctly adds the `is_fraud_flagged` boolean column, and correctly identifies the mock fraudster.
 5. Run `pytest tests/test_fraud_flagging.py` in your local terminal to validate the join logic.
+
+```python
+import os
+import sys
+import pytest
+from pyspark.sql import SparkSession
+from pyspark.sql import Row
+from src.silver.fraud_flagging import flag_fraud
+
+# Fix for Windows: Ensure Spark uses the current Python executable and IPv4 to avoid Socket errors
+os.environ['PYSPARK_PYTHON'] = sys.executable
+os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
+os.environ['_JAVA_OPTIONS'] = "-Djava.net.preferIPv4Stack=true"
+
+@pytest.fixture(scope="session")
+def spark():
+    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
+
+def test_flag_fraud_broadcast_join(spark):
+    mock_loans = [
+        Row(loan_id="L-01", applicant_ssn="12345"),
+        Row(loan_id="L-02", applicant_ssn="99999")
+    ]
+    mock_blacklist = [
+        Row(ssn="99999")
+    ]
+    
+    df_loans = spark.createDataFrame(mock_loans)
+    df_blacklist = spark.createDataFrame(mock_blacklist)
+    
+    df_flagged = flag_fraud(df_loans, df_blacklist)
+    
+    # Assert L-01 is False
+    assert df_flagged.filter(df_flagged.loan_id == "L-01").first()["is_fraud_flagged"] == False
+    
+    # Assert L-02 is True
+    assert df_flagged.filter(df_flagged.loan_id == "L-02").first()["is_fraud_flagged"] == True
+```
 
 ---
 

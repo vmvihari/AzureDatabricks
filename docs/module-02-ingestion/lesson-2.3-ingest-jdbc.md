@@ -82,16 +82,94 @@ Let's build the extraction script for our operational database.
 4. **Crucial:** Implement the `numPartitions` and boundary options to ensure this read is distributed across the Spark cluster and doesn't crash the source DB.
 5. Write the result to ADLS as a Delta table.
 
+```python
+from pyspark.sql import SparkSession
+
+# Initialize Spark Session
+spark = SparkSession.builder.appName("IngestServicingBronze").getOrCreate()
+
+# In a Databricks environment, dbutils is available by default.
+# For local testing, we would mock this.
+try:
+    db_user = dbutils.secrets.get(scope="mortgage-secrets", key="az-sql-user")
+    db_pass = dbutils.secrets.get(scope="mortgage-secrets", key="az-sql-pass")
+except NameError:
+    db_user = "mock_user"
+    db_pass = "mock_pass"
+
+jdbc_url = "jdbc:sqlserver://az-sql-mortgage-db.database.windows.net:1433;database=MortgageServicing"
+
+# Read from JDBC
+df_servicing = (spark.read
+    .format("jdbc")
+    .option("url", jdbc_url)
+    .option("dbtable", "dbo.LoanServicingEvents")
+    .option("user", db_user)
+    .option("password", db_pass)
+    .option("partitionColumn", "event_id")
+    .option("lowerBound", "1")
+    .option("upperBound", "10000000")
+    .option("numPartitions", "10")
+    .load())
+
+# Write to Bronze Delta Table
+(df_servicing.write
+    .format("delta")
+    .mode("append")
+    .save("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_servicing_events"))
+```
+
 ---
 
-## 🛠️ Action Step: Validation & Testing
+## 🛠️ Action Step: Local Unit Testing for JDBC
 
-Just like our ADLS Gen2 ingestion script, you cannot easily test this locally right now because your laptop does not have direct network access to the Azure SQL Server or the Databricks Key Vault for secrets.
+Because your local laptop cannot easily connect to the secured Azure SQL Server (and shouldn't during a unit test!), we must test our JDBC logic by *mocking* the DataFrameReader.
 
-1. **Unit Testing:** You would use a mock local database (like SQLite) or simply mock the PySpark DataFrameReader in `pytest` to ensure your data transformations work.
-2. **Integration Testing:** In **Lesson 3.5**, we will configure Databricks Connect. This will allow your local script execution to securely reach out to the Databricks cluster, resolving the `dbutils.secrets` dynamically, and securely connecting to the Azure SQL Server from the cloud environment, while streaming the execution logs back to your screen.
+1. Create a new file `tests/test_ingest_jdbc.py`.
+2. Add the following code to simulate the database read and ensure your Spark SQL logic functions correctly:
 
-*Note: For now, save your script and ensure it is syntactically correct!*
+```python
+import os
+import sys
+import pytest
+from pyspark.sql import SparkSession
+from pyspark.sql import Row
+from pyspark.sql.functions import col
+
+# Fix for Windows: Ensure Spark uses the current Python executable
+os.environ['PYSPARK_PYTHON'] = sys.executable
+os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
+
+@pytest.fixture(scope="session")
+def spark():
+    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
+
+# Example: We want to ensure our ingestion script filters out events older than 2020
+def extract_recent_events(df):
+    return df.filter(col("event_year") >= 2020)
+
+def test_jdbc_date_filtering(spark):
+    # 1. Arrange: Create mock data simulating rows returned by the JDBC driver
+    mock_db_rows = [
+        Row(event_id=1, event_year=2019),
+        Row(event_id=2, event_year=2021)
+    ]
+    df_mock_jdbc = spark.createDataFrame(mock_db_rows)
+    
+    # 2. Act: Run our extraction logic on the mock DB data
+    df_result = extract_recent_events(df_mock_jdbc)
+    
+    # 3. Assert: Verify the old event was filtered out
+    assert df_result.count() == 1
+    assert df_result.first()["event_id"] == 2
+```
+
+3. Run the test:
+```bash
+pytest tests/test_ingest_jdbc.py
+```
+
+*(Note: We will cover integration testing—actually connecting to the database—using Databricks Connect in **Lesson 3.5**).*
 
 ---
 

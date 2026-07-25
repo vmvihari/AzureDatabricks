@@ -88,6 +88,28 @@ As discussed in [Lesson 4.5: Asset Bundles](lesson-4.5-asset-bundles.md), you sh
 
 1. Open your `databricks.yml` file.
 2. Add a DLT pipeline deployment target to your Dev environment configuration.
+
+```yaml
+# databricks.yml
+bundle:
+  name: mortgage-data-platform
+
+resources:
+  pipelines:
+    mortgage_dlt_pipeline:
+      name: mortgage_dlt_pipeline_${workspace.current_user.short_name}
+      development: true
+      libraries:
+        - file: ./src/dlt/dlt_loans_pipeline.py
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://adb-<workspace-id>.azuredatabricks.net
+```
+
 3. Run `databricks bundle deploy -t dev`.
 4. Run `databricks bundle run mortgage_dlt_pipeline -t dev`.
 5. Open the Databricks UI in your Dev workspace to visually verify the DAG executing successfully without corrupting production data.

@@ -77,16 +77,93 @@ Let's build the decoupled Python extraction script.
 3. Fetch the `fraud-api-token` from the `mortgage-secrets` scope and pass it in the HTTP headers.
 4. Hit the external API (`https://api.fraud-detection-service.com/v1/blacklist`) and save the raw JSON payload to the ADLS Gen2 landing zone (`abfss://bronze@.../landing/fraud_blacklist/blacklist_today.json`).
 
+```python
+import requests
+import json
+
+# In a Databricks environment, dbutils is available by default.
+try:
+    api_token = dbutils.secrets.get(scope="mortgage-secrets", key="fraud-api-token")
+except NameError:
+    api_token = "mock_token"
+
+url = "https://api.fraud-detection-service.com/v1/blacklist"
+headers = {
+    "Authorization": f"Bearer {api_token}",
+    "Content-Type": "application/json"
+}
+
+response = requests.get(url, headers=headers)
+
+if response.status_code == 200:
+    data = response.json()
+    
+    # In Databricks, we write to ADLS using standard python I/O by writing to the /dbfs mount or using dbutils.fs.put
+    # For this exercise, we will assume dbutils.fs.put
+    destination_path = "abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/fraud_blacklist/blacklist_today.json"
+    
+    try:
+        dbutils.fs.put(destination_path, json.dumps(data), overwrite=True)
+        print(f"Successfully landed API data to {destination_path}")
+    except NameError:
+        print(f"Local Mock: Would have written data to {destination_path}")
+else:
+    raise Exception(f"API request failed with status {response.status_code}")
+```
+
 ---
 
-## 🛠️ Action Step: Validation & Testing
+## 🛠️ Action Step: Local Unit Testing for HTTP APIs
 
-As with the previous ingestion scripts, testing a script that relies on external secure APIs and cloud storage requires a configured environment.
+When writing scripts that make network calls, your unit tests should *never* actually hit the real API. This causes tests to be slow, fragile, and potentially blocked by firewalls. We use a library called `responses` to mock the HTTP call.
 
-1. **Unit Testing:** You would use the `responses` or `requests-mock` libraries in `pytest` to mock the HTTP API call, ensuring your script correctly handles successful payloads and 4xx/5xx errors without actually hitting the network.
-2. **Integration Testing:** In **Lesson 3.5**, Databricks Connect will allow you to run this script locally while securely resolving the `dbutils.secrets` for the token and seamlessly pushing the JSON file up to the `abfss://` ADLS container.
+1. Install the testing library locally:
+```bash
+pip install responses pytest
+```
 
-*Note: For now, simply save your script!*
+2. Create a new file `tests/test_ingest_fraud_api.py`.
+3. Add the following code to simulate the API response:
+
+```python
+import pytest
+import requests
+import responses
+
+# The logic from our ingestion script, refactored into a testable function
+def fetch_fraud_blacklist(api_url, token):
+    headers = {"Authorization": f"Bearer {token}"}
+    response = requests.get(api_url, headers=headers)
+    response.raise_for_status()
+    return response.json()
+
+@responses.activate
+def test_fetch_fraud_blacklist_success():
+    # 1. Arrange: Tell the 'responses' library to intercept any calls to this URL
+    api_url = "https://api.fraud-detection-service.com/v1/blacklist"
+    mock_payload = {"blacklisted_ssns": ["000-00-0000", "999-99-9999"]}
+    
+    responses.add(
+        responses.GET,
+        api_url,
+        json=mock_payload,
+        status=200
+    )
+    
+    # 2. Act: Call our function
+    result = fetch_fraud_blacklist(api_url, "fake-test-token")
+    
+    # 3. Assert: Verify the function correctly returned the JSON payload
+    assert "blacklisted_ssns" in result
+    assert len(result["blacklisted_ssns"]) == 2
+```
+
+4. Run the test:
+```bash
+pytest tests/test_ingest_fraud_api.py
+```
+
+*(Note: We will cover integration testing—actually interacting with Azure Key Vault and ADLS—using Databricks Connect in **Lesson 3.5**).*
 
 ---
 

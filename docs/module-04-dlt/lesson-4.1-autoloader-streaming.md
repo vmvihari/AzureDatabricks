@@ -50,21 +50,37 @@ Let's upgrade our original Bronze ingestion script to use Auto Loader.
 2. Create a new PySpark script named `autoloader_bronze.py`.
 3. Write the PySpark code to incrementally read the CSV loan applications using Auto Loader:
 ```python
-df_stream = spark.readStream \
-    .format("cloudFiles") \
-    .option("cloudFiles.format", "csv") \
-    .option("header", "true") \
-    .schema(loan_schema) \
-    .load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/loan_applications/")
+# apps/mortgage-data-platform/src/dlt/autoloader_bronze.py
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType
+
+def run_autoloader():
+    spark = SparkSession.builder.appName("AutoLoaderBronze").getOrCreate()
+    
+    loan_schema = StructType([
+        StructField("loan_id", StringType(), True),
+        StructField("applicant_ssn", StringType(), True),
+        StructField("loan_amount", DoubleType(), True),
+        StructField("credit_score", IntegerType(), True)
+    ])
+
+    df_stream = spark.readStream \
+        .format("cloudFiles") \
+        .option("cloudFiles.format", "csv") \
+        .option("header", "true") \
+        .schema(loan_schema) \
+        .load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/loan_applications/")
+
+    (df_stream.writeStream
+        .format("delta")
+        .option("checkpointLocation", "abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/_checkpoints/bronze_loans/")
+        .trigger(availableNow=True)
+        .start("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans"))
+
+if __name__ == "__main__":
+    run_autoloader()
 ```
-4. Write the stream out to the Bronze Delta table, explicitly defining the checkpoint location:
-```python
-df_stream.writeStream \
-    .format("delta") \
-    .option("checkpointLocation", "abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/_checkpoints/bronze_loans/") \
-    .trigger(availableNow=True) \
-    .start("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans")
-```
+
 *(Note: `.trigger(availableNow=True)` is a fantastic feature that tells the stream to process everything that has landed since the last run, and then shut down the cluster to save costs, rather than running 24/7).*
 
 ---
@@ -77,6 +93,66 @@ Structured Streaming logic can be complex to test. However, we must ensure our A
 2. Create `test_autoloader_bronze.py`.
 3. In your local `pytest` environment, you can use the `MemorySink` or write to a temporary local Delta table to validate that the schema is enforced and rows are processed as expected.
 4. Run `pytest tests/test_autoloader_bronze.py` in your local terminal.
+
+```python
+import os
+import sys
+import pytest
+import shutil
+import tempfile
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType
+
+os.environ['PYSPARK_PYTHON'] = sys.executable
+os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
+os.environ['_JAVA_OPTIONS'] = "-Djava.net.preferIPv4Stack=true"
+
+@pytest.fixture(scope="session")
+def spark():
+    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
+
+def test_autoloader_memory_sink(spark):
+    # Auto Loader testing requires writing actual files to a temp directory to simulate landing data
+    temp_dir = tempfile.mkdtemp()
+    try:
+        # 1. Arrange: Write a mock CSV to the temp directory
+        csv_content = "loan_id,applicant_ssn,loan_amount,credit_score\nL-999,123-45-6789,500000.0,750\n"
+        with open(os.path.join(temp_dir, "mock_data.csv"), "w") as f:
+            f.write(csv_content)
+            
+        loan_schema = StructType([
+            StructField("loan_id", StringType(), True),
+            StructField("applicant_ssn", StringType(), True),
+            StructField("loan_amount", DoubleType(), True),
+            StructField("credit_score", IntegerType(), True)
+        ])
+
+        # 2. Act: We simulate the `cloudFiles` reader, but since we don't have real cloudFiles locally, 
+        # we will use the standard `csv` format in the test to prove the streaming logic works.
+        df_stream = spark.readStream \
+            .format("csv") \
+            .option("header", "true") \
+            .schema(loan_schema) \
+            .load(temp_dir)
+
+        # Write to memory sink for testing
+        query = df_stream.writeStream \
+            .format("memory") \
+            .queryName("test_stream") \
+            .outputMode("append") \
+            .start()
+            
+        query.processAllAvailable()
+        
+        # 3. Assert
+        result_df = spark.sql("SELECT * FROM test_stream")
+        assert result_df.count() == 1
+        assert result_df.first()["loan_id"] == "L-999"
+        
+        query.stop()
+    finally:
+        shutil.rmtree(temp_dir)
+```
 
 ---
 

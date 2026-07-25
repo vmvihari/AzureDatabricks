@@ -53,6 +53,30 @@ Let's build a physical Gold table for our Chief Risk Officer.
    - `average_credit_score` (Avg of `credit_score`)
 5. Write the summarized DataFrame to `abfss://gold@stmortgagedata<your_initials>.dfs.core.windows.net/tables/gold_state_risk_summary` as a Delta Table using `overwrite` mode.
 
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import sum, avg, col
+
+spark = SparkSession.builder.appName("StateRiskSummary").getOrCreate()
+
+def aggregate_risk_by_state(df_silver):
+    return df_silver.groupBy("state").agg(
+        sum("loan_amount").alias("total_exposure"),
+        sum(col("is_fraud_flagged").cast("int")).alias("total_fraud_flags"),
+        avg("credit_score").alias("average_credit_score")
+    )
+
+if __name__ == "__main__":
+    df_silver = spark.read.format("delta").load("abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans")
+    
+    df_gold = aggregate_risk_by_state(df_silver)
+    
+    (df_gold.write
+        .format("delta")
+        .mode("overwrite")
+        .save("abfss://gold@stmortgagedata<your_initials>.dfs.core.windows.net/tables/gold_state_risk_summary"))
+```
+
 ---
 
 ## 5. 🛠️ Action Step: Validation & Testing
@@ -64,6 +88,43 @@ As always, aggregation logic should be validated locally before it hits the Data
 3. Write a `pytest` test that creates a mock DataFrame representing `silver_loans` with 3 rows (e.g., 2 loans in "TX" and 1 in "CA"). Ensure one of the TX loans is flagged for fraud.
 4. Pass the mock DataFrame to your aggregation function and assert that the output DataFrame correctly has 2 rows (one for TX, one for CA), and that the TX `total_fraud_flags` equals 1.
 5. Run `pytest tests/test_gold_aggregations.py` to validate your math.
+
+```python
+import os
+import sys
+import pytest
+from pyspark.sql import SparkSession
+from pyspark.sql import Row
+from src.gold.state_risk_summary import aggregate_risk_by_state
+
+# Fix for Windows: Ensure Spark uses the current Python executable and IPv4 to avoid Socket errors
+os.environ['PYSPARK_PYTHON'] = sys.executable
+os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
+os.environ['_JAVA_OPTIONS'] = "-Djava.net.preferIPv4Stack=true"
+
+@pytest.fixture(scope="session")
+def spark():
+    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
+
+def test_aggregate_risk_by_state(spark):
+    mock_data = [
+        Row(state="TX", loan_amount=100.0, is_fraud_flagged=True, credit_score=700),
+        Row(state="TX", loan_amount=200.0, is_fraud_flagged=False, credit_score=720),
+        Row(state="CA", loan_amount=500.0, is_fraud_flagged=False, credit_score=800)
+    ]
+    df_in = spark.createDataFrame(mock_data)
+    
+    df_out = aggregate_risk_by_state(df_in)
+    
+    # Assert row count
+    assert df_out.count() == 2
+    
+    # Assert TX aggregations
+    tx_row = df_out.filter(df_out.state == "TX").first()
+    assert tx_row["total_exposure"] == 300.0
+    assert tx_row["total_fraud_flags"] == 1
+    assert tx_row["average_credit_score"] == 710.0
+```
 
 ---
 

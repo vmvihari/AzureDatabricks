@@ -95,16 +95,101 @@ Now let's write our first actual pipeline script.
 5. Write the dataframe back out to the ADLS bronze container as a **Delta table** using:
    `.write.format("delta").mode("append").save("abfss://bronze@.../tables/bronze_loans")`
 
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DoubleType
+
+# Initialize Spark Session (Databricks runtime provides `spark` by default, but this is best practice)
+spark = SparkSession.builder.appName("IngestLoansBronze").getOrCreate()
+
+# 1. Define strict schema
+loan_schema = StructType([
+    StructField("loan_id", StringType(), True),
+    StructField("applicant_ssn", StringType(), True),
+    StructField("loan_amount", DoubleType(), True),
+    StructField("credit_score", IntegerType(), True)
+])
+
+# 2. Read from Landing Zone
+df_loans = (spark.read
+            .format("csv")
+            .option("header", "true")
+            .schema(loan_schema)
+            .load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/loan_applications/"))
+
+# 3. Write to Bronze Delta Table
+(df_loans.write
+    .format("delta")
+    .mode("append")
+    .save("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans"))
+```
+
 ---
 
-## 🛠️ Action Step: Validation & Testing
+## 🛠️ Action Step: Local Unit Testing with Pytest
 
-In real-world Data Engineering, you **never** write a pipeline script and deploy it without testing. How do we test this script?
+In real-world Data Engineering, you **never** write a pipeline script without testing it. Waiting 5 minutes for a Databricks cluster to spin up just to see if your schema is defined correctly is a waste of time. Instead, Senior Data Engineers use `pytest` and a local in-memory Spark session to test their code instantly on their laptops.
 
-1. **Unit Testing:** You would use `pytest` and a local in-memory Spark session to feed a small, fake CSV into this logic to ensure the schema parses correctly.
-2. **Integration Testing:** You would use **Databricks Connect** to run this script directly from your local IDE, leveraging the cloud cluster to read the actual `abfss://` data securely.
+Let's test our `ingest_loans_bronze.py` logic.
 
-*Note: We will fully configure your local testing environment using Pytest in **Lesson 2.6** and Databricks Connect in **Lesson 3.5**. For now, simply save your script!*
+### 1. Install Testing Libraries
+Open your local terminal and install the PySpark and Pytest libraries:
+```bash
+pip install pyspark pytest
+```
+
+### 2. Write the Test
+In order to test our script without actually hitting the ADLS cloud storage, we will refactor our script's logic into a function that takes a DataFrame, and then we will feed it a "mock" DataFrame.
+
+1. Create a `tests/` directory at the root of `apps/mortgage-data-platform/`.
+2. Inside `tests/`, create `test_ingest_loans_bronze.py`.
+3. Add the following code:
+
+```python
+import os
+import sys
+import pytest
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DoubleType
+from pyspark.sql import Row
+
+# Fix for Windows: Ensure Spark uses the current Python executable
+os.environ['PYSPARK_PYTHON'] = sys.executable
+os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
+
+@pytest.fixture(scope="session")
+def spark():
+    """Spins up a lightning-fast, local-only Spark session in your laptop's RAM."""
+    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
+
+def test_bronze_schema_enforcement(spark):
+    # 1. Arrange: Define the exact schema we built in our ingestion script
+    loan_schema = StructType([
+        StructField("loan_id", StringType(), True),
+        StructField("applicant_ssn", StringType(), True),
+        StructField("loan_amount", DoubleType(), True),
+        StructField("credit_score", IntegerType(), True)
+    ])
+    
+    # Create a mock CSV row in memory
+    mock_data = [Row("L-100", "123-45-6789", 250000.0, 720)]
+    
+    # 2. Act: Apply the schema to the mock data
+    df = spark.createDataFrame(mock_data, schema=loan_schema)
+    
+    # 3. Assert: Verify the types were cast correctly
+    assert df.schema["loan_amount"].dataType == DoubleType()
+    assert df.first()["credit_score"] == 720
+```
+
+### 3. Run the Test
+Run the test from your terminal:
+```bash
+pytest tests/test_ingest_loans_bronze.py
+```
+You should see a green dot `.` indicating your test passed instantly, proving your schema logic is sound without ever touching Azure!
+
+*(Note: We will cover testing cloud connectivity with Databricks Connect in **Lesson 3.5**).*
 
 ---
 
