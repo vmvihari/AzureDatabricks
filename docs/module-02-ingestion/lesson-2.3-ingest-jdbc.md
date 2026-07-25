@@ -89,7 +89,7 @@ Let's build the extraction script for our operational database.
 Just like our ADLS Gen2 ingestion script, you cannot easily test this locally right now because your laptop does not have direct network access to the Azure SQL Server or the Databricks Key Vault for secrets.
 
 1. **Unit Testing:** You would use a mock local database (like SQLite) or simply mock the PySpark DataFrameReader in `pytest` to ensure your data transformations work.
-2. **Integration Testing:** In **Module 8**, we will configure Databricks Connect. This will allow your local script execution to securely reach out to the Databricks cluster, resolving the `dbutils.secrets` dynamically, and securely connecting to the Azure SQL Server from the cloud environment, while streaming the execution logs back to your screen.
+2. **Integration Testing:** In **Lesson 3.5**, we will configure Databricks Connect. This will allow your local script execution to securely reach out to the Databricks cluster, resolving the `dbutils.secrets` dynamically, and securely connecting to the Azure SQL Server from the cloud environment, while streaming the execution logs back to your screen.
 
 *Note: For now, save your script and ensure it is syntactically correct!*
 

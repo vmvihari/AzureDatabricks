@@ -84,7 +84,7 @@ Let's build the decoupled Python extraction script.
 As with the previous ingestion scripts, testing a script that relies on external secure APIs and cloud storage requires a configured environment.
 
 1. **Unit Testing:** You would use the `responses` or `requests-mock` libraries in `pytest` to mock the HTTP API call, ensuring your script correctly handles successful payloads and 4xx/5xx errors without actually hitting the network.
-2. **Integration Testing:** In **Module 8**, Databricks Connect will allow you to run this script locally while securely resolving the `dbutils.secrets` for the token and seamlessly pushing the JSON file up to the `abfss://` ADLS container.
+2. **Integration Testing:** In **Lesson 3.5**, Databricks Connect will allow you to run this script locally while securely resolving the `dbutils.secrets` for the token and seamlessly pushing the JSON file up to the `abfss://` ADLS container.
 
 *Note: For now, simply save your script!*
 

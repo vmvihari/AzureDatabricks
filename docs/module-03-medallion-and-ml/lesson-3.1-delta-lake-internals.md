@@ -61,7 +61,7 @@ However, following our **Production Standard** (local IDE development), you must
    ```bash
    pip install delta-spark
    ```
-2. **Configure the Spark Session:** When building local PySpark scripts (before we hook them up to Databricks Connect in Module 8), you must explicitly add the Delta extensions to your SparkSession:
+2. **Configure the Spark Session:** When building local PySpark scripts (before we hook them up to Databricks Connect in Lesson 3.5), you must explicitly add the Delta extensions to your SparkSession:
    ```python
    from pyspark.sql import SparkSession
    from delta import configure_spark_with_delta_pip

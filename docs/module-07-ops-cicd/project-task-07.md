@@ -41,4 +41,4 @@ You are now equipped with the practical skills and theoretical knowledge expecte
 **[✅ View Solution](solution-07.md)**
 
 ---
-[⬅️ Previous: Lesson 7.3: Git and CI/CD](lesson-7.3-git-and-cicd.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 8: Local Development](../module-08-local-dev-and-testing/README.md)
+[⬅️ Previous: Lesson 7.3: Git and CI/CD](lesson-7.3-git-and-cicd.md) | [🏠 Main Directory](../../README.md)

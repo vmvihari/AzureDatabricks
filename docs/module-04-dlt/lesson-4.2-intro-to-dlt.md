@@ -84,7 +84,7 @@ def bronze_loans():
 
 ## 5. 🛠️ Action Step: Validation & Testing
 
-As discussed in [Module 8: Local Development](../module-08-local-dev-and-testing/lesson-8.3-asset-bundles-and-integration.md), you should test this pipeline using a Databricks Asset Bundle before deploying to production.
+As discussed in [Lesson 4.5: Asset Bundles](lesson-4.5-asset-bundles.md), you should test this pipeline using a Databricks Asset Bundle before deploying to production.
 
 1. Open your `databricks.yml` file.
 2. Add a DLT pipeline deployment target to your Dev environment configuration.

@@ -85,7 +85,7 @@ For quick iterations or when using Databricks Asset Bundles (DABs), engineers of
 
 ## 4. 🛠️ Action Step: Validation & Testing
 
-As discussed in [Module 8: Local Development](../module-08-local-dev-and-testing/lesson-8.3-asset-bundles-and-integration.md), you never test a workflow by deploying it directly to Production.
+As discussed in [Lesson 4.5: Asset Bundles](../module-04-dlt/lesson-4.5-asset-bundles.md), you never test a workflow by deploying it directly to Production.
 
 1. Add your Workflow definition to your `databricks.yml` Asset Bundle.
 2. Run `databricks bundle deploy -t dev` from your terminal to deploy the job to your Dev workspace.

@@ -64,7 +64,7 @@ Let's build the ETL pipeline that transforms our raw loan data into the Silver l
 
 ## 5. 🛠️ Action Step: Validation & Testing
 
-As discussed in [Module 8: Local Development](../module-08-local-dev-and-testing/lesson-8.1-local-pyspark-and-pytest.md), you must test your transformation logic locally before deploying.
+As discussed in [Lesson 2.6: Local Unit Testing](../module-02-ingestion/lesson-2.6-local-pyspark-and-pytest.md), you must test your transformation logic locally before deploying.
 
 1. Navigate to `apps/mortgage-data-platform/tests/` (create it if it doesn't exist).
 2. Create `test_silver_cleansing.py`.

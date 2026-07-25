@@ -104,7 +104,7 @@ In real-world Data Engineering, you **never** write a pipeline script and deploy
 1. **Unit Testing:** You would use `pytest` and a local in-memory Spark session to feed a small, fake CSV into this logic to ensure the schema parses correctly.
 2. **Integration Testing:** You would use **Databricks Connect** to run this script directly from your local IDE, leveraging the cloud cluster to read the actual `abfss://` data securely.
 
-*Note: We will fully configure your local testing environment (pytest and Databricks Connect) in **Module 8: Local Development**. For now, simply save your script!*
+*Note: We will fully configure your local testing environment using Pytest in **Lesson 2.6** and Databricks Connect in **Lesson 3.5**. For now, simply save your script!*
 
 ---
 
