@@ -63,8 +63,17 @@ Let's build the ETL pipeline that transforms our raw loan data into the Silver l
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, regexp_replace
+from delta import configure_spark_with_delta_pip
 
-spark = SparkSession.builder.appName("CleanseLoansSilver").getOrCreate()
+# On Databricks Runtime, Delta is pre-configured. This builder pattern ensures
+# the script also runs correctly in a local development environment.
+builder = (
+    SparkSession.builder
+    .appName("CleanseLoansSilver")
+    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+)
+spark = configure_spark_with_delta_pip(builder).getOrCreate()
 
 def cleanse_loans(df):
     return (df.dropDuplicates(["loan_id"])

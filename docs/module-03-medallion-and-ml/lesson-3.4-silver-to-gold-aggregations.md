@@ -56,8 +56,17 @@ Let's build a physical Gold table for our Chief Risk Officer.
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import sum, avg, col
+from delta import configure_spark_with_delta_pip
 
-spark = SparkSession.builder.appName("StateRiskSummary").getOrCreate()
+# On Databricks Runtime, Delta is pre-configured. This builder pattern ensures
+# the script also runs correctly in a local development environment.
+builder = (
+    SparkSession.builder
+    .appName("StateRiskSummary")
+    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+)
+spark = configure_spark_with_delta_pip(builder).getOrCreate()
 
 def aggregate_risk_by_state(df_silver):
     return df_silver.groupBy("state").agg(

@@ -59,8 +59,17 @@ Let's integrate our API data with our core pipeline.
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import broadcast, col, when
+from delta import configure_spark_with_delta_pip
 
-spark = SparkSession.builder.appName("FraudFlagging").getOrCreate()
+# On Databricks Runtime, Delta is pre-configured. This builder pattern ensures
+# the script also runs correctly in a local development environment.
+builder = (
+    SparkSession.builder
+    .appName("FraudFlagging")
+    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+)
+spark = configure_spark_with_delta_pip(builder).getOrCreate()
 
 def flag_fraud(df_loans, df_blacklist):
     return df_loans.join(

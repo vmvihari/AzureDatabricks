@@ -149,12 +149,11 @@ def extract_recent_events(df):
     return df.filter(col("event_year") >= 2020)
 
 def test_jdbc_date_filtering(spark):
-    # 1. Arrange: Create mock data simulating rows returned by the JDBC driver
-    mock_db_rows = [
-        Row(event_id=1, event_year=2019),
-        Row(event_id=2, event_year=2021)
-    ]
-    df_mock_jdbc = spark.createDataFrame(mock_db_rows)
+    # 1. Arrange: Create mock data using Spark SQL to bypass Python worker socket issues on Windows
+    df_mock_jdbc = spark.sql("""
+        SELECT 1 as event_id, 2019 as event_year UNION ALL
+        SELECT 2 as event_id, 2021 as event_year
+    """)
     
     # 2. Act: Run our extraction logic on the mock DB data
     df_result = extract_recent_events(df_mock_jdbc)
