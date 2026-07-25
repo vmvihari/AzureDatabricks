@@ -61,29 +61,37 @@ Let's build the ETL pipeline that transforms our raw loan data into the Silver l
 4. Write the resulting DataFrame to `abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans` in Delta format using `mode("overwrite")` (for this initial batch load).
 
 ```python
-from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, regexp_replace
-from delta import configure_spark_with_delta_pip
 
-# On Databricks Runtime, Delta is pre-configured. This builder pattern ensures
-# the script also runs correctly in a local development environment.
-builder = (
-    SparkSession.builder
-    .appName("CleanseLoansSilver")
-    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-)
-spark = configure_spark_with_delta_pip(builder).getOrCreate()
 
 def cleanse_loans(df):
+    """
+    Cleanses raw Bronze loan data into Silver quality.
+    Accepts a DataFrame and returns a transformed DataFrame.
+    Importing this function has zero side effects — safe for pytest.
+    """
     return (df.dropDuplicates(["loan_id"])
               .filter(col("applicant_ssn").isNotNull())
               .withColumn("applicant_ssn", regexp_replace(col("applicant_ssn"), "-", "")))
 
+
 if __name__ == "__main__":
+    from pyspark.sql import SparkSession
+    from delta import configure_spark_with_delta_pip
+
+    # On Databricks Runtime, Delta is pre-configured. This builder pattern ensures
+    # the script also runs correctly in a local development environment.
+    builder = (
+        SparkSession.builder
+        .appName("CleanseLoansSilver")
+        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+    )
+    spark = configure_spark_with_delta_pip(builder).getOrCreate()
+
     df_bronze = spark.read.format("delta").load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans")
     df_silver = cleanse_loans(df_bronze)
-    
+
     (df_silver.write
         .format("delta")
         .mode("overwrite")
@@ -95,6 +103,46 @@ if __name__ == "__main__":
 ## 5. 🛠️ Action Step: Validation & Testing
 
 As discussed in Module 2, you must test your transformation logic locally before deploying.
+
+### 1. One-Time Project Setup (Do This Once)
+
+Before you can import from `src.silver.cleansed_loans` in a test, Python needs two things in place. **Do this once at the start of Module 3 — you will not need to repeat it for Lessons 3.3 or 3.4.**
+
+**Step A:** Create a `conftest.py` at the root of `apps/mortgage-data-platform/`. This tells pytest to add the project root to Python's module search path:
+
+```python
+# apps/mortgage-data-platform/conftest.py
+import sys
+import os
+
+# Add the project root to sys.path so that `from src.X.Y import Z` imports work
+sys.path.insert(0, os.path.dirname(__file__))
+```
+
+**Step B:** Create empty `__init__.py` files to make each `src` subdirectory a proper Python package. Without these, Python does not recognize them as importable modules:
+
+```
+apps/mortgage-data-platform/
+├── conftest.py          ← created in Step A
+└── src/
+    ├── __init__.py      ← create this (empty file is fine)
+    ├── bronze/
+    │   └── __init__.py  ← create this
+    ├── silver/
+    │   └── __init__.py  ← create this
+    └── gold/
+        └── __init__.py  ← create this
+```
+
+Each `__init__.py` can simply contain a single comment:
+```python
+# package marker
+```
+
+> [!NOTE]
+> **Why is this needed?** In Python, a directory is only treated as a "package" (importable with dot notation like `src.silver.cleansed_loans`) if it contains an `__init__.py` file. Without it, `from src.silver.cleansed_loans import cleanse_loans` will always fail with `ModuleNotFoundError: No module named 'src'`, even if the file physically exists.
+
+### 2. Write the Test
 
 1. Navigate to `apps/mortgage-data-platform/tests/` (create it if it doesn't exist).
 2. Create `test_silver_cleansing.py`.

@@ -57,21 +57,15 @@ Let's integrate our API data with our core pipeline.
 6. Write the resulting DataFrame back out, overwriting the `silver_loans` Delta table so it now includes the new fraud flag.
 
 ```python
-from pyspark.sql import SparkSession
 from pyspark.sql.functions import broadcast, col, when
-from delta import configure_spark_with_delta_pip
 
-# On Databricks Runtime, Delta is pre-configured. This builder pattern ensures
-# the script also runs correctly in a local development environment.
-builder = (
-    SparkSession.builder
-    .appName("FraudFlagging")
-    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-)
-spark = configure_spark_with_delta_pip(builder).getOrCreate()
 
 def flag_fraud(df_loans, df_blacklist):
+    """
+    Flags fraudulent loan applicants via a broadcast join against a blacklist.
+    Accepts DataFrames and returns a transformed DataFrame.
+    Importing this function has zero side effects — safe for pytest.
+    """
     return df_loans.join(
         broadcast(df_blacklist),
         df_loans.applicant_ssn == df_blacklist.ssn,
@@ -81,12 +75,26 @@ def flag_fraud(df_loans, df_blacklist):
         when(col("ssn").isNotNull(), True).otherwise(False)
     ).drop("ssn")
 
+
 if __name__ == "__main__":
+    from pyspark.sql import SparkSession
+    from delta import configure_spark_with_delta_pip
+
+    # On Databricks Runtime, Delta is pre-configured. This builder pattern ensures
+    # the script also runs correctly in a local development environment.
+    builder = (
+        SparkSession.builder
+        .appName("FraudFlagging")
+        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+    )
+    spark = configure_spark_with_delta_pip(builder).getOrCreate()
+
     df_silver = spark.read.format("delta").load("abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans")
     df_black = spark.read.format("json").load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/fraud_blacklist/blacklist_today.json")
-    
+
     df_flagged = flag_fraud(df_silver, df_black)
-    
+
     (df_flagged.write
         .format("delta")
         .mode("overwrite")

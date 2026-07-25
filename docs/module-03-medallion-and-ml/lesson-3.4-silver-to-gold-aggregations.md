@@ -54,32 +54,40 @@ Let's build a physical Gold table for our Chief Risk Officer.
 5. Write the summarized DataFrame to `abfss://gold@stmortgagedata<your_initials>.dfs.core.windows.net/tables/gold_state_risk_summary` as a Delta Table using `overwrite` mode.
 
 ```python
-from pyspark.sql import SparkSession
 from pyspark.sql.functions import sum, avg, col
-from delta import configure_spark_with_delta_pip
 
-# On Databricks Runtime, Delta is pre-configured. This builder pattern ensures
-# the script also runs correctly in a local development environment.
-builder = (
-    SparkSession.builder
-    .appName("StateRiskSummary")
-    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-    .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-)
-spark = configure_spark_with_delta_pip(builder).getOrCreate()
 
 def aggregate_risk_by_state(df_silver):
+    """
+    Aggregates Silver loan data into a Gold-level state risk summary.
+    Accepts a DataFrame and returns a transformed DataFrame.
+    Importing this function has zero side effects — safe for pytest.
+    """
     return df_silver.groupBy("state").agg(
         sum("loan_amount").alias("total_exposure"),
         sum(col("is_fraud_flagged").cast("int")).alias("total_fraud_flags"),
         avg("credit_score").alias("average_credit_score")
     )
 
+
 if __name__ == "__main__":
+    from pyspark.sql import SparkSession
+    from delta import configure_spark_with_delta_pip
+
+    # On Databricks Runtime, Delta is pre-configured. This builder pattern ensures
+    # the script also runs correctly in a local development environment.
+    builder = (
+        SparkSession.builder
+        .appName("StateRiskSummary")
+        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+    )
+    spark = configure_spark_with_delta_pip(builder).getOrCreate()
+
     df_silver = spark.read.format("delta").load("abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans")
-    
+
     df_gold = aggregate_risk_by_state(df_silver)
-    
+
     (df_gold.write
         .format("delta")
         .mode("overwrite")
