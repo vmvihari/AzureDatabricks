@@ -101,7 +101,6 @@ import os
 import sys
 import pytest
 from pyspark.sql import SparkSession
-from pyspark.sql import Row
 from src.silver.fraud_flagging import flag_fraud
 
 # Fix for Windows: Ensure Spark uses the current Python executable and IPv4 to avoid Socket errors
@@ -114,16 +113,16 @@ def spark():
     return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
 
 def test_flag_fraud_broadcast_join(spark):
-    mock_loans = [
-        Row(loan_id="L-01", applicant_ssn="12345"),
-        Row(loan_id="L-02", applicant_ssn="99999")
-    ]
-    mock_blacklist = [
-        Row(ssn="99999")
-    ]
+    # Create the mock DataFrames using native Spark SQL
+    # This completely bypasses PySpark's RDD Python worker socket on Windows
+    df_loans = spark.sql("""
+        SELECT 'L-01' as loan_id, '12345' as applicant_ssn UNION ALL
+        SELECT 'L-02' as loan_id, '99999' as applicant_ssn
+    """)
     
-    df_loans = spark.createDataFrame(mock_loans)
-    df_blacklist = spark.createDataFrame(mock_blacklist)
+    df_blacklist = spark.sql("""
+        SELECT '99999' as ssn
+    """)
     
     df_flagged = flag_fraud(df_loans, df_blacklist)
     

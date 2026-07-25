@@ -94,7 +94,6 @@ import os
 import sys
 import pytest
 from pyspark.sql import SparkSession
-from pyspark.sql import Row
 from src.gold.state_risk_summary import aggregate_risk_by_state
 
 # Fix for Windows: Ensure Spark uses the current Python executable and IPv4 to avoid Socket errors
@@ -107,12 +106,13 @@ def spark():
     return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
 
 def test_aggregate_risk_by_state(spark):
-    mock_data = [
-        Row(state="TX", loan_amount=100.0, is_fraud_flagged=True, credit_score=700),
-        Row(state="TX", loan_amount=200.0, is_fraud_flagged=False, credit_score=720),
-        Row(state="CA", loan_amount=500.0, is_fraud_flagged=False, credit_score=800)
-    ]
-    df_in = spark.createDataFrame(mock_data)
+    # Create the mock DataFrame using native Spark SQL
+    # This completely bypasses PySpark's RDD Python worker socket on Windows
+    df_in = spark.sql("""
+        SELECT 'TX' as state, CAST(100.0 AS DOUBLE) as loan_amount, True as is_fraud_flagged, 700 as credit_score UNION ALL
+        SELECT 'TX' as state, CAST(200.0 AS DOUBLE) as loan_amount, False as is_fraud_flagged, 720 as credit_score UNION ALL
+        SELECT 'CA' as state, CAST(500.0 AS DOUBLE) as loan_amount, False as is_fraud_flagged, 800 as credit_score
+    """)
     
     df_out = aggregate_risk_by_state(df_in)
     

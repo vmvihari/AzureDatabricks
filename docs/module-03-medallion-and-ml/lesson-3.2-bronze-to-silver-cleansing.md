@@ -97,7 +97,6 @@ import os
 import sys
 import pytest
 from pyspark.sql import SparkSession
-from pyspark.sql import Row
 from src.silver.cleansed_loans import cleanse_loans
 
 # Fix for Windows: Ensure Spark uses the current Python executable and IPv4 to avoid Socket errors
@@ -110,12 +109,13 @@ def spark():
     return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
 
 def test_cleansing_drops_null_ssns_and_formats_strings(spark):
-    mock_data = [
-        Row(loan_id="L-01", applicant_ssn="123-45-6789"),
-        Row(loan_id="L-02", applicant_ssn=None), # Should be dropped
-        Row(loan_id="L-01", applicant_ssn="123-45-6789") # Duplicate, should be dropped
-    ]
-    df_in = spark.createDataFrame(mock_data)
+    # Create the mock DataFrame using native Spark SQL
+    # This completely bypasses PySpark's RDD Python worker socket on Windows
+    df_in = spark.sql("""
+        SELECT 'L-01' as loan_id, '123-45-6789' as applicant_ssn UNION ALL
+        SELECT 'L-02' as loan_id, CAST(NULL AS STRING) as applicant_ssn UNION ALL
+        SELECT 'L-01' as loan_id, '123-45-6789' as applicant_ssn
+    """)
     
     df_clean = cleanse_loans(df_in)
     

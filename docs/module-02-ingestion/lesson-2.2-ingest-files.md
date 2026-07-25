@@ -148,6 +148,7 @@ In order to test our script without actually hitting the ADLS cloud storage, we 
 ```python
 import os
 import sys
+import tempfile
 import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DoubleType
@@ -156,6 +157,7 @@ from pyspark.sql import Row
 # Fix for Windows: Ensure Spark uses the current Python executable
 os.environ['PYSPARK_PYTHON'] = sys.executable
 os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
+os.environ['_JAVA_OPTIONS'] = "-Djava.net.preferIPv4Stack=true"
 
 @pytest.fixture(scope="session")
 def spark():
@@ -171,15 +173,21 @@ def test_bronze_schema_enforcement(spark):
         StructField("credit_score", IntegerType(), True)
     ])
     
-    # Create a mock CSV row in memory
-    mock_data = [Row("L-100", "123-45-6789", 250000.0, 720)]
-    
-    # 2. Act: Apply the schema to the mock data
-    df = spark.createDataFrame(mock_data, schema=loan_schema)
-    
-    # 3. Assert: Verify the types were cast correctly
-    assert df.schema["loan_amount"].dataType == DoubleType()
-    assert df.first()["credit_score"] == 720
+    # Create a mock CSV file (Bypasses PySpark RDD socket issues on Windows)
+    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix=".csv") as f:
+        f.write("loan_id,applicant_ssn,loan_amount,credit_score\n")
+        f.write("L-100,123-45-6789,250000.0,720\n")
+        temp_path = f.name
+        
+    try:
+        # 2. Act: Apply the schema to the mock data using native CSV reader
+        df = spark.read.option("header", "true").schema(loan_schema).csv(temp_path)
+        
+        # 3. Assert: Verify the types were cast correctly
+        assert df.schema["loan_amount"].dataType == DoubleType()
+        assert df.first()["credit_score"] == 720
+    finally:
+        os.remove(temp_path)
 ```
 
 ### 3. Run the Test
