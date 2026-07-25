@@ -14,7 +14,7 @@ The Mortgage Data Platform needs to ingest daily Credit Score updates from a 3rd
 You must write a PySpark script to ingest these credit scores into the Bronze layer securely and efficiently.
 
 1. **The Dataset:**
-   - Assume the data lands daily as CSV files in: `abfss://bronze@stmortgagedataprod.dfs.core.windows.net/landing/credit_scores/`.
+   - Assume the data lands daily as CSV files in: `abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/credit_scores/`.
    - The CSV contains three columns: `ssn` (String), `credit_score` (Integer), and `report_date` (Date).
 
 2. **The Script:**
@@ -29,7 +29,12 @@ You must write a PySpark script to ingest these credit scores into the Bronze la
 ## Acceptance Criteria
 - [ ] `ingest_credit_scores.py` exists in the `src/bronze/` directory.
 - [ ] The script uses `spark.read.format("csv")` but strictly defines a `StructType` schema.
+
 - [ ] The output is written in `delta` format using `append` mode.
 
 ---
-[⬅️ Previous: Lesson 2.5: PySpark Transformations](lesson-2.5-pyspark-transformations.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 3 (Coming Soon)](#)
+
+**[✅ View Solution](project-task-02-solution.md)**
+
+---
+[⬅️ Previous: Lesson 2.5: PySpark Transformations](lesson-2.5-pyspark-transformations.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 3: Medallion Architecture & ML](../module-03-medallion-and-ml/README.md)

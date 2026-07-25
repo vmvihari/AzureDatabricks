@@ -17,7 +17,7 @@ To do this, you must transform the raw Bronze credit data into a Silver table, a
    - Read the `bronze_credit_scores` Delta table.
    - Use `dropDuplicates(["ssn"])` to ensure we only have the latest credit score for each person.
    - Use `.withColumnRenamed("ssn", "applicant_ssn")` so it matches our loan data standard.
-   - Write it out to `abfss://silver@stmortgagedataprod.dfs.core.windows.net/tables/silver_credit_scores` in Delta format using `overwrite` mode.
+   - Write it out to `abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_credit_scores` in Delta format using `overwrite` mode.
 
 2. **The Gold Pipeline (`src/gold/credit_tier_exposure.py`):**
    - Read both `silver_loans` and `silver_credit_scores`.
@@ -27,7 +27,7 @@ To do this, you must transform the raw Bronze credit data into a Silver table, a
      - `650 - 750`: "Fair"
      - `< 650`: "Poor"
    - Use `groupBy("credit_tier")` and `sum("loan_amount")`.
-   - Write the aggregated DataFrame to `abfss://gold@stmortgagedataprod.dfs.core.windows.net/tables/gold_credit_exposure`.
+   - Write the aggregated DataFrame to `abfss://gold@stmortgagedata<your_initials>.dfs.core.windows.net/tables/gold_credit_exposure`.
 
 ## Acceptance Criteria
 - [ ] `cleansed_credit_scores.py` exists and successfully deduplicates the Bronze data.
@@ -35,4 +35,8 @@ To do this, you must transform the raw Bronze credit data into a Silver table, a
 - [ ] All code adheres to strict PEP 8 Python naming conventions (`snake_case` variables, no hardcoded secrets).
 
 ---
-[⬅️ Previous: Lesson 3.4: Silver to Gold Aggregations](lesson-3.4-silver-to-gold-aggregations.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 4 (Coming Soon)](#)
+
+**[✅ View Solution](project-task-03-solution.md)**
+
+---
+[⬅️ Previous: Lesson 3.4: Gold Aggregations](lesson-3.4-silver-to-gold-aggregations.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 4: Delta Live Tables](../module-04-dlt/README.md)

@@ -52,7 +52,7 @@ spark.conf.set("spark.databricks.delta.optimize.maxFileSize", "134217728")
 
 # Run the OPTIMIZE command
 # Note: You can pass raw SQL through the spark.sql API
-spark.sql("OPTIMIZE delta.`abfss://bronze@stmortgagedataprod.dfs.core.windows.net/tables/bronze_loans`")
+spark.sql("OPTIMIZE delta.`abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans`")
 
 print("Successfully optimized bronze_loans table.")
 ```

@@ -75,10 +75,11 @@ Open your local terminal or the Azure Cloud Shell and run the following commands
    az group create --name rg-mortgage-prod --location eastus
    ```
 2. **Create the Storage Account (ADLS Gen2):**
+   *Note: Storage Account names must be globally unique across all of Azure. Please replace `<your_initials>` with your actual initials (or a random number) to ensure the name is available.*
    *Note: We strictly enforce `--enable-hierarchical-namespace true` (HNS) and use standard LRS to optimize cost. We also explicitly disable public access.*
    ```bash
    az storage account create \
-       --name stmortgagedataprod \
+       --name stmortgagedata<your_initials> \
        --resource-group rg-mortgage-prod \
        --location eastus \
        --sku Standard_LRS \
@@ -87,9 +88,18 @@ Open your local terminal or the Azure Cloud Shell and run the following commands
    ```
 3. **Create the Medallion Containers:**
    ```bash
-   az storage fs create -n bronze --account-name stmortgagedataprod --public-access off
-   az storage fs create -n silver --account-name stmortgagedataprod --public-access off
-   az storage fs create -n gold --account-name stmortgagedataprod --public-access off
+   az storage fs create -n bronze --account-name stmortgagedata<your_initials> --public-access off
+   az storage fs create -n silver --account-name stmortgagedata<your_initials> --public-access off
+   az storage fs create -n gold --account-name stmortgagedata<your_initials> --public-access off
+   ```
+4. **Create the Databricks Workspace:**
+   *Note: We use the `premium` SKU because Unity Catalog (which we use later) requires it.*
+   ```bash
+   az databricks workspace create \
+       --resource-group rg-mortgage-prod \
+       --name dbw-mortgage-prod \
+       --location eastus \
+       --sku premium
    ```
 
 *(If you do not have the Azure CLI installed, you may manually provision this in the Azure Portal. If doing so, you must explicitly select the "Advanced" tab during creation, check the box for "Enable hierarchical namespace", and explicitly disable public blob access in the "Configuration" tab).*

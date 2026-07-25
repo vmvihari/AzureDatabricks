@@ -30,7 +30,7 @@ Databricks connects to ADLS securely using Managed Identities or Service Princip
 *Example for our Mortgage Platform:*
 ```python
 # Production-first path referencing our 'bronze' container
-loan_apps_path = "abfss://bronze@stmortgagedataprod.dfs.core.windows.net/landing/loan_applications/"
+loan_apps_path = "abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/loan_applications/"
 ```
 
 ---
@@ -51,7 +51,7 @@ Parquet is the gold standard for Big Data. It is a highly compressed, columnar f
 ```python
 df_parquet = (spark.read
               .format("parquet")
-              .load("abfss://bronze@stmortgagedataprod.dfs.core.windows.net/landing/some_parquet_data/"))
+              .load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/some_parquet_data/"))
 ```
 
 ---
@@ -90,7 +90,7 @@ Now let's write our first actual pipeline script.
 
 1. Navigate to the `apps/mortgage-data-platform/src/bronze/` directory.
 2. Create a new file named `ingest_loans_bronze.py`.
-3. In this file, write the PySpark code to read the CSV files from our ADLS `bronze` container (`abfss://bronze@stmortgagedataprod.dfs.core.windows.net/landing/loan_applications/`).
+3. In this file, write the PySpark code to read the CSV files from our ADLS `bronze` container (`abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/loan_applications/`).
 4. **Requirement:** Do NOT use `inferSchema=True`. You must define the `StructType` explicitly based on the CSV structure.
 5. Write the dataframe back out to the ADLS bronze container as a **Delta table** using:
    `.write.format("delta").mode("append").save("abfss://bronze@.../tables/bronze_loans")`

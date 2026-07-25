@@ -65,7 +65,7 @@ CREATE SCHEMA IF NOT EXISTS gold;
 -- Example of creating a table in UC pointing to our ADLS data
 CREATE TABLE IF NOT EXISTS silver.loans
 USING DELTA
-LOCATION 'abfss://silver@stmortgagedataprod.dfs.core.windows.net/tables/silver_loans';
+LOCATION 'abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans';
 ```
 
 ---

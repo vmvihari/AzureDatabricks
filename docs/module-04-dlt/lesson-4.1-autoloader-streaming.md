@@ -27,7 +27,7 @@ Spark tracks exactly which files it has already processed by writing to a **Chec
 df_stream = spark.readStream \
     .format("csv") \
     .schema(loan_schema) \
-    .load("abfss://bronze@stmortgagedataprod.dfs.core.windows.net/landing/loan_applications/")
+    .load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/loan_applications/")
 ```
 
 ---
@@ -55,15 +55,15 @@ df_stream = spark.readStream \
     .option("cloudFiles.format", "csv") \
     .option("header", "true") \
     .schema(loan_schema) \
-    .load("abfss://bronze@stmortgagedataprod.dfs.core.windows.net/landing/loan_applications/")
+    .load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/loan_applications/")
 ```
 4. Write the stream out to the Bronze Delta table, explicitly defining the checkpoint location:
 ```python
 df_stream.writeStream \
     .format("delta") \
-    .option("checkpointLocation", "abfss://bronze@stmortgagedataprod.dfs.core.windows.net/_checkpoints/bronze_loans/") \
+    .option("checkpointLocation", "abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/_checkpoints/bronze_loans/") \
     .trigger(availableNow=True) \
-    .start("abfss://bronze@stmortgagedataprod.dfs.core.windows.net/tables/bronze_loans")
+    .start("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans")
 ```
 *(Note: `.trigger(availableNow=True)` is a fantastic feature that tells the stream to process everything that has landed since the last run, and then shut down the cluster to save costs, rather than running 24/7).*
 

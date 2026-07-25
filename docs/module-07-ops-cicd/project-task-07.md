@@ -37,4 +37,8 @@ You have successfully built the **Mortgage Data Platform** from the ground up, i
 You are now equipped with the practical skills and theoretical knowledge expected of a Senior Azure Databricks Data Engineer.
 
 ---
-[⬅️ Previous: Lesson 7.3: Git and CI/CD](lesson-7.3-git-and-cicd.md) | [🏠 Main Directory](../../README.md)
+
+**[✅ View Solution](project-task-07-solution.md)**
+
+---
+[⬅️ Previous: Lesson 7.3: Git and CI/CD](lesson-7.3-git-and-cicd.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 8: Local Development](../module-08-local-dev-and-testing/README.md)

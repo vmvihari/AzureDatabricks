@@ -52,7 +52,7 @@ Our `silver_loans` table is frequently queried by State and by Loan Status. Let'
 from pyspark.sql import SparkSession
 
 spark = SparkSession.builder.getOrCreate()
-silver_path = "abfss://silver@stmortgagedataprod.dfs.core.windows.net/tables/silver_loans"
+silver_path = "abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans"
 
 # 1. Enable Liquid Clustering on the key columns
 spark.sql(f"ALTER TABLE delta.`{silver_path}` CLUSTER BY (state, loan_status)")

@@ -51,7 +51,7 @@ Let's build a physical Gold table for our Chief Risk Officer.
    - `total_exposure` (Sum of `loan_amount`)
    - `total_fraud_flags` (Sum of `is_fraud_flagged` cast to integers)
    - `average_credit_score` (Avg of `credit_score`)
-5. Write the summarized DataFrame to `abfss://gold@stmortgagedataprod.dfs.core.windows.net/tables/gold_state_risk_summary` as a Delta Table using `overwrite` mode.
+5. Write the summarized DataFrame to `abfss://gold@stmortgagedata<your_initials>.dfs.core.windows.net/tables/gold_state_risk_summary` as a Delta Table using `overwrite` mode.
 
 ---
 

@@ -57,7 +57,7 @@ def bronze_servicing_events():
     return (
         spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", "json")
-        .load("abfss://bronze@stmortgagedataprod.dfs.core.windows.net/landing/servicing_cdc/")
+        .load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/servicing_cdc/")
     )
 
 # 2. Define the empty target Silver table (required for apply_changes)

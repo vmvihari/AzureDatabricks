@@ -40,4 +40,8 @@ You must create a single SQL script to register the tables and enforce governanc
 - [ ] Applies the existing `mask_ssn` UDF to the Silver credit score table.
 
 ---
-[⬅️ Previous: Lesson 6.4: Data Lineage](lesson-6.4-data-lineage.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 7 (Coming Soon)](#)
+
+**[✅ View Solution](project-task-06-solution.md)**
+
+---
+[⬅️ Previous: Lesson 6.4: Data Lineage](lesson-6.4-data-lineage.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 7: DataOps & CI/CD](../module-07-ops-cicd/README.md)

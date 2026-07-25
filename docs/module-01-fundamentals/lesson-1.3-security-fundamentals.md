@@ -61,9 +61,16 @@ A **Service Principal** is essentially a "system account" (like a robot user) in
 ## 🛠️ Action Step (CLI): Configure Secret Scopes
 We must provision a real Databricks Secret Scope to store our Fraud API token securely.
 
-1. Open your terminal and authenticate using the Databricks CLI:
+*(Note: If you do not have the Databricks CLI installed, you must install it first. On Windows, you can open PowerShell and run `winget install Databricks.DatabricksCLI`. On Mac, run `brew tap databricks/tap` then `brew install databricks`).*
+
+1. Log into your Databricks Workspace UI. Go to **User Settings > Developer > Access Tokens** and click **Generate new token**. 
+   - If prompted for a Scope, select **Other APIs** (since we are not just connecting a BI tool).
+   - For the API Scope, you must explicitly check the **secrets** box (or **All APIs** if available) to allow this token to manage Secret Scopes.
+   - Copy this token.
+2. Open your terminal and authenticate using the Databricks CLI:
    ```bash
    databricks configure --token
+   # When prompted, enter your Databricks Workspace URL and the token you just generated.
    ```
 2. Create a new secret scope for the mortgage platform:
    ```bash

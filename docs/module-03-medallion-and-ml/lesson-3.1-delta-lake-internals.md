@@ -45,7 +45,7 @@ Because Delta Lake does not immediately delete physical Parquet files when you u
 df_yesterday = spark.read \
   .format("delta") \
   .option("timestampAsOf", "2023-10-01") \
-  .load("abfss://silver@stmortgagedataprod.dfs.core.windows.net/tables/silver_loans")
+  .load("abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans")
 ```
 
 ---

@@ -21,7 +21,7 @@ You must write a declarative DLT pipeline that streams the Credit Bureau data an
 
 2. **The Bronze Ingestion:**
    - Define a `@dlt.table` named `bronze_credit_scores`.
-   - Use `spark.readStream.format("cloudFiles")` to ingest the raw CSVs from `abfss://bronze@stmortgagedataprod.dfs.core.windows.net/landing/credit_scores/`.
+   - Use `spark.readStream.format("cloudFiles")` to ingest the raw CSVs from `abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/credit_scores/`.
    - **Data Quality constraint:** Add a `@dlt.expect_or_drop` constraint ensuring the `credit_score` is strictly between `300` and `850`.
 
 3. **The Silver CDC Application:**
@@ -34,7 +34,12 @@ You must write a declarative DLT pipeline that streams the Credit Bureau data an
 - [ ] `dlt_credit_scores.py` exists and is formatted as a valid DLT pipeline (no `.writeStream` or `.save()` calls).
 - [ ] The pipeline implements Auto Loader (`cloudFiles`).
 - [ ] A strict DLT expectation drops impossible credit scores.
+
 - [ ] The pipeline implements CDC using `apply_changes` and SCD Type 1 logic.
 
 ---
-[⬅️ Previous: Lesson 4.4: CDC & SCD](lesson-4.4-cdc-scd-type-1-2.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 5 (Coming Soon)](#)
+
+**[✅ View Solution](project-task-04-solution.md)**
+
+---
+[⬅️ Previous: Lesson 4.4: CDC & SCD](lesson-4.4-cdc-scd-type-1-2.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 5: Performance & Optimization](../module-05-performance/README.md)

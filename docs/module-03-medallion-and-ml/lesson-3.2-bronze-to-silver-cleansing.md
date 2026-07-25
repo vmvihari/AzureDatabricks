@@ -52,13 +52,13 @@ df_new.write \
 Let's build the ETL pipeline that transforms our raw loan data into the Silver layer.
 
 1. Navigate to `apps/mortgage-data-platform/src/silver/` and create `cleansed_loans.py`.
-2. Write PySpark code to read the Delta table `abfss://bronze@stmortgagedataprod.dfs.core.windows.net/tables/bronze_loans`.
+2. Write PySpark code to read the Delta table `abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans`.
 3. Apply the following transformations:
    - Use `dropDuplicates(["loan_id"])`.
    - Use `filter()` to drop any rows where `applicant_ssn` is null.
    - Use `withColumn()` and `regexp_replace()` to strip hyphens (`-`) from the `applicant_ssn`.
    - Ensure column names are strictly `snake_case`.
-4. Write the resulting DataFrame to `abfss://silver@stmortgagedataprod.dfs.core.windows.net/tables/silver_loans` in Delta format using `mode("overwrite")` (for this initial batch load).
+4. Write the resulting DataFrame to `abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans` in Delta format using `mode("overwrite")` (for this initial batch load).
 
 ---
 

@@ -75,7 +75,7 @@ def bronze_loans():
         .option("cloudFiles.format", "csv")
         .option("header", "true")
         .schema(loan_schema)
-        .load("abfss://bronze@stmortgagedataprod.dfs.core.windows.net/landing/loan_applications/")
+        .load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/loan_applications/")
     )
 ```
 *(Notice how we entirely deleted the `.writeStream`, the `.checkpointLocation`, and the target ADLS path. DLT handles all of that for us behind the scenes).*

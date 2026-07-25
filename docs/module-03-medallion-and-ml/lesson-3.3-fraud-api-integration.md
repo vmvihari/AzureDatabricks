@@ -51,7 +51,7 @@ Let's integrate our API data with our core pipeline.
 
 1. Navigate to `apps/mortgage-data-platform/src/silver/` and create `fraud_flagging.py`.
 2. Write PySpark code to read the `silver_loans` Delta table.
-3. Read the JSON blacklist from `abfss://bronze@stmortgagedataprod.dfs.core.windows.net/landing/fraud_blacklist/blacklist_today.json`.
+3. Read the JSON blacklist from `abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/fraud_blacklist/blacklist_today.json`.
 4. Perform a `Left Join` using the `broadcast` hint. Join on the SSN columns.
 5. Create a new column named `is_fraud_flagged`. If the right side of the join is null, the flag is `False`; otherwise, `True`.
 6. Write the resulting DataFrame back out, overwriting the `silver_loans` Delta table so it now includes the new fraud flag.
