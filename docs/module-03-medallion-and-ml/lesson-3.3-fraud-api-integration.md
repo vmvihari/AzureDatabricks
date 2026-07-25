@@ -58,6 +58,18 @@ Let's integrate our API data with our core pipeline.
 
 ---
 
+## 🛠️ Action Step: Validation & Testing
+
+Just like the cleansing pipeline, this integration script should be tested before deployment.
+
+1. Navigate to `apps/mortgage-data-platform/tests/` (create it if it doesn't exist).
+2. Create `test_fraud_flagging.py`.
+3. Write a `pytest` test that creates two mock DataFrames: one representing `silver_loans` and one representing the `blacklist`. 
+4. Pass them to your flagging function and assert that the resulting DataFrame correctly adds the `is_fraud_flagged` boolean column, and correctly identifies the mock fraudster.
+5. Run `pytest tests/test_fraud_flagging.py` in your local terminal to validate the join logic.
+
+---
+
 ## 🎯 Interview Preparation
 
 > [!TIP]

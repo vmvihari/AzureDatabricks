@@ -42,4 +42,4 @@ You must write a declarative DLT pipeline that streams the Credit Bureau data an
 **[✅ View Solution](solution-04.md)**
 
 ---
-[⬅️ Previous: Lesson 4.4: CDC & SCD](lesson-4.4-cdc-scd-type-1-2.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 5: Performance & Optimization](../module-05-performance/README.md)
+[⬅️ Previous: Lesson 4.5: Asset Bundles](lesson-4.5-asset-bundles.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 5: Query Performance Optimization](../module-05-performance/README.md)

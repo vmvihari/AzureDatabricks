@@ -65,6 +65,18 @@ Now, any row with a missing SSN or negative loan amount will be safely dropped, 
 
 ---
 
+## 5. 🛠️ Action Step: Validation & Testing
+
+To test DLT Expectations, the best approach is to visualize them in the Databricks Pipeline UI.
+
+1. Inject a mock CSV file into your `landing_path` that contains a row with a negative `loan_amount`.
+2. Deploy and run your DLT pipeline using Databricks Asset Bundles (`databricks bundle run`).
+3. Open the Delta Live Tables UI in your Databricks workspace.
+4. Click on the `bronze_loans` table in the DAG.
+5. In the right-hand panel under "Data Quality", verify that your expectation `valid_loan_amount` caught the bad row and dropped it, and that the UI successfully recorded the exact count of dropped records.
+
+---
+
 ## 🎯 Interview Preparation
 
 > [!TIP]

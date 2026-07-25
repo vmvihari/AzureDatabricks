@@ -51,10 +51,29 @@ df_yesterday = spark.read \
 ---
 
 ## 🛠️ Action Step: Setting up the Delta Environment
-Before we write code in the next lesson, ensure your Databricks environment (or local PySpark session) is configured to use Delta Lake. 
+Before we write code in the next lesson, ensure your environment is configured to use Delta Lake. 
 
-1. Ensure the `delta-spark` package is installed.
-2. In production, ensure you are utilizing the `abfss://` protocol to store your Delta tables in Azure Data Lake Storage, rather than local DBFS.
+If you are running code in a **Databricks Notebook or Job Cluster**, Delta Lake is pre-installed and configured by default. You don't need to do anything!
+
+However, following our **Production Standard** (local IDE development), you must configure your local environment so your IDE understands Delta syntax:
+
+1. **Install the package:** Open your local terminal (VS Code terminal) and run:
+   ```bash
+   pip install delta-spark
+   ```
+2. **Configure the Spark Session:** When building local PySpark scripts (before we hook them up to Databricks Connect in Module 8), you must explicitly add the Delta extensions to your SparkSession:
+   ```python
+   from pyspark.sql import SparkSession
+   from delta import configure_spark_with_delta_pip
+
+   builder = SparkSession.builder.appName("Delta Sandbox") \
+       .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+       .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+
+   spark = configure_spark_with_delta_pip(builder).getOrCreate()
+   ```
+
+*(Note: Always use the `abfss://` protocol in your paths to write your Delta tables directly to Azure Data Lake Storage, never to the local filesystem or DBFS).*
 
 ---
 

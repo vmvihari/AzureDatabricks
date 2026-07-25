@@ -39,4 +39,4 @@ To do this, you must transform the raw Bronze credit data into a Silver table, a
 **[✅ View Solution](solution-03.md)**
 
 ---
-[⬅️ Previous: Lesson 3.4: Gold Aggregations](lesson-3.4-silver-to-gold-aggregations.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 4: Delta Live Tables](../module-04-dlt/README.md)
+[⬅️ Previous: Lesson 3.5: Databricks Connect](lesson-3.5-databricks-connect.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 4: Delta Live Tables](../module-04-dlt/README.md)

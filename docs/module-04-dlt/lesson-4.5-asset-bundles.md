@@ -1,4 +1,4 @@
-# Lesson 8.3: Integration Testing with Databricks Asset Bundles
+# Lesson 4.5: Integration Testing with Databricks Asset Bundles
 
 ## Table of Contents
 - [The Problem with UI Deployments](#the-problem-with-ui-deployments)
@@ -10,7 +10,7 @@
 
 ## The Problem with UI Deployments
 
-You have written local `pytest` suites to validate your logic, and you have used Databricks Connect to verify your queries run successfully in the cloud. Are you ready to deploy to production?
+You have written local `pytest` suites to validate your logic, and you have used Databricks Connect to verify your queries run successfully in the cloud. Are you ready to deploy your new DLT pipelines to production?
 
 **No.** You have not tested the integration of the entire system. What if the Gold layer script fails because it doesn't have the correct Unity Catalog permissions to read the Silver layer table? What if the Workflow is misconfigured and the scripts run out of order? 
 
@@ -92,4 +92,4 @@ You can now monitor the output in your terminal. If the pipeline runs from end-t
 > **Answer:** "I never test in production. I utilize Databricks Asset Bundles (DABs) to define my data pipelines as YAML. From my local machine or a CI pipeline, I run `databricks bundle deploy` targeting an isolated Development or Staging workspace. I then run `databricks bundle run` to execute the entire DAG. This validates that the Python code, the cluster configurations, and the Unity Catalog permissions all integrate flawlessly before the code ever reaches the Production workspace."
 
 ---
-[⬅️ Previous: Lesson 8.2: Databricks Connect](lesson-8.2-databricks-connect.md) | [🏠 Main Directory](../../README.md) 
+[⬅️ Previous: Lesson 4.4: CDC & SCDs](lesson-4.4-cdc-scd-type-1-2.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Project Task 4](project-task-04.md)

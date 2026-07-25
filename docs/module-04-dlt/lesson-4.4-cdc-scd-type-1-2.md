@@ -76,6 +76,18 @@ dlt.apply_changes(
 
 ---
 
+## 5. 🛠️ Action Step: Validation & Testing
+
+CDC logic is critical to validate, ensuring updates apply correctly and out-of-order events don't corrupt the data.
+
+1. Inject a mock JSON payload into your `servicing_cdc` landing path containing an initial balance for a mock `loan_id`.
+2. Run the DLT pipeline using Databricks Asset Bundles (`databricks bundle run`) and verify the Silver table reflects the initial balance.
+3. Inject a second JSON payload with a *newer* timestamp but a different balance (simulating a payment). Run the pipeline again.
+4. Verify the Silver table updated the balance correctly.
+5. (Optional but highly recommended) Inject a third JSON payload with an *older* timestamp than the second payload. Run the pipeline again and verify the Silver table ignores it!
+
+---
+
 ## 🎯 Interview Preparation
 
 > [!TIP]
@@ -87,4 +99,4 @@ dlt.apply_changes(
 > **Answer:** "In distributed message buses like Kafka or Azure Event Hubs, events can arrive out of order. If a customer changes their phone number at 1:00 PM, and again at 1:05 PM, network latency might cause the 1:05 PM event to arrive at the Lakehouse *before* the 1:00 PM event. A naive PySpark `MERGE INTO` will process the 1:05 event, and then wrongly overwrite it with the stale 1:00 event. DLT's `apply_changes` solves this inherently because it requires a `sequence_by` column (like an event timestamp), guaranteeing that an older event will never overwrite a newer state, regardless of arrival order."
 
 ---
-[⬅️ Previous: Lesson 4.3: DLT Expectations](lesson-4.3-dlt-expectations.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Project Task 4](project-task-04.md)
+[⬅️ Previous: Lesson 4.3: DLT Expectations](lesson-4.3-dlt-expectations.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Lesson 4.5: Asset Bundles](lesson-4.5-asset-bundles.md)

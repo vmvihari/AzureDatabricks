@@ -7,6 +7,7 @@ In this module, you will learn the mechanics of Delta Lake (ACID transactions, T
 - [Lesson 3.2: Bronze to Silver - Cleansing and Normalization](lesson-3.2-bronze-to-silver-cleansing.md)
 - [Lesson 3.3: Fraud API Integration & Spark Joins](lesson-3.3-fraud-api-integration.md)
 - [Lesson 3.4: Silver to Gold - Business Aggregations](lesson-3.4-silver-to-gold-aggregations.md)
+- [Lesson 3.5: Interactive Debugging with Databricks Connect](lesson-3.5-databricks-connect.md)
 - [Project Task 3: The Credit Score Aggregation](project-task-03.md)
 
 ---

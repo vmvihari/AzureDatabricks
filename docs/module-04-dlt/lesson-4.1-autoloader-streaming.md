@@ -69,6 +69,17 @@ df_stream.writeStream \
 
 ---
 
+## 🛠️ Action Step: Validation & Testing
+
+Structured Streaming logic can be complex to test. However, we must ensure our Auto Loader pipeline correctly processes data increments.
+
+1. Navigate to `apps/mortgage-data-platform/tests/`.
+2. Create `test_autoloader_bronze.py`.
+3. In your local `pytest` environment, you can use the `MemorySink` or write to a temporary local Delta table to validate that the schema is enforced and rows are processed as expected.
+4. Run `pytest tests/test_autoloader_bronze.py` in your local terminal.
+
+---
+
 ## 🎯 Interview Preparation
 
 > [!TIP]

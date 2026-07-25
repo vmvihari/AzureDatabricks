@@ -55,6 +55,18 @@ Let's build a physical Gold table for our Chief Risk Officer.
 
 ---
 
+## 5. 🛠️ Action Step: Validation & Testing
+
+As always, aggregation logic should be validated locally before it hits the Databricks cluster.
+
+1. Navigate to `apps/mortgage-data-platform/tests/`.
+2. Create `test_gold_aggregations.py`.
+3. Write a `pytest` test that creates a mock DataFrame representing `silver_loans` with 3 rows (e.g., 2 loans in "TX" and 1 in "CA"). Ensure one of the TX loans is flagged for fraud.
+4. Pass the mock DataFrame to your aggregation function and assert that the output DataFrame correctly has 2 rows (one for TX, one for CA), and that the TX `total_fraud_flags` equals 1.
+5. Run `pytest tests/test_gold_aggregations.py` to validate your math.
+
+---
+
 ## 🎯 Interview Preparation
 
 > [!TIP]
@@ -62,4 +74,4 @@ Let's build a physical Gold table for our Chief Risk Officer.
 > **Answer:** "While views ensure the data is perfectly real-time, they push the compute burden entirely onto the end-user's BI tool. If a dashboard with 10 visual charts executes 10 concurrent queries against a view, Databricks has to scan and aggregate the massive Silver table 10 times, causing latency and burning expensive compute units. By persisting (materializing) the Gold layer as physical Delta Tables, we pre-calculate the aggregations during the nightly batch window. The BI tool then queries a tiny, highly-optimized physical table, resulting in sub-second dashboard load times."
 
 ---
-[⬅️ Previous: Lesson 3.3: Fraud API Integration](lesson-3.3-fraud-api-integration.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Project Task 3](project-task-03.md)
+[⬅️ Previous: Lesson 3.3: Fraud API Integration](lesson-3.3-fraud-api-integration.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Lesson 3.5: Databricks Connect](lesson-3.5-databricks-connect.md)

@@ -7,6 +7,7 @@ In this module, you will transition from writing imperative PySpark batch jobs t
 - [Lesson 4.2: Introduction to Delta Live Tables (DLT)](lesson-4.2-intro-to-dlt.md)
 - [Lesson 4.3: Data Quality with DLT Expectations](lesson-4.3-dlt-expectations.md)
 - [Lesson 4.4: Change Data Capture (CDC) & SCDs](lesson-4.4-cdc-scd-type-1-2.md)
+- [Lesson 4.5: Integration Testing with Databricks Asset Bundles](lesson-4.5-asset-bundles.md)
 - [Project Task 4: The DLT Credit Score Pipeline](project-task-04.md)
 
 ---

@@ -1,4 +1,4 @@
-# Lesson 8.1: Local Unit Testing with Pytest
+# Lesson 2.6: Local Unit Testing with Pytest
 
 ## Table of Contents
 - [Why Local Testing Matters](#why-local-testing-matters)
@@ -29,7 +29,7 @@ To test locally, we use the `pytest` framework.
 
 ## 🛠️ Action Step: Writing a Pytest Suite for the Silver Layer
 
-In Module 3, we built the Silver layer which drops rows where `loan_id` is null. Let's write a unit test to prove this logic works *before* we deploy it to the cloud.
+In Module 3, we will build the Silver layer which drops rows where `loan_id` is null. Let's write a unit test to prove this logic works *before* we deploy it to the cloud.
 
 1. Navigate to `apps/mortgage-data-platform/` and create a `tests/` directory.
 2. Inside `tests/`, create a file named `test_cleansed_loans.py`.
@@ -87,4 +87,4 @@ To validate this locally on your laptop:
 > **Answer:** "I separate my I/O (reading/writing to ADLS) from my business logic. By writing business logic as pure Python functions that accept and return DataFrames, I can write local `pytest` suites using `pyspark` in local mode. This allows me to test edge cases instantly on my laptop using mock dataframes, avoiding the 5-minute cluster boot time and providing immediate feedback before I deploy to Databricks."
 
 ---
-[⬅️ Previous: Module 7 Overview](../README.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Lesson 8.2: Databricks Connect](lesson-8.2-databricks-connect.md)
+[⬅️ Previous: Lesson 2.5: PySpark Transformations](lesson-2.5-pyspark-transformations.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Project Task 2](project-task-02.md)

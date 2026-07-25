@@ -90,11 +90,42 @@ df_gold_summary = df_transformed.groupBy("state").agg(
 ---
 
 ## 🛠️ Action Step: Transformation Scratchpad
-Before we build the formal Silver pipelines in Module 3, let's practice transformations.
+Before we build the formal Medallion pipelines in Module 3, let's practice these PySpark transformations in a temporary sandbox.
 
-1. In your Databricks workspace (or local environment), create a new notebook named `scratchpad_transformations`.
-2. Load the `bronze_loans` Delta table you created in Lesson 2.2.
-3. Write a PySpark query to `filter()` for only "APPROVED" loans, `withColumn()` to strip hyphens from the SSN, and `groupBy()` to find the average loan amount by state.
+1. **The Production Sandbox:** In the real world, you write `.py` scripts in a local IDE (like VS Code) and test them locally using `pytest`. We will configure this local testing environment in **Lesson 2.6**. For now, simply open your **Databricks Workspace**, create a new Notebook named `scratchpad_transformations`, and run the code there to learn the syntax! *(Alternatively, you can create `scratchpad_transformations.py` locally and just save it).*
+2. First, load the `bronze_loans` Delta table you created in Lesson 2.2:
+   ```python
+   from pyspark.sql import SparkSession
+   from pyspark.sql.functions import col, regexp_replace, avg
+   
+   spark = SparkSession.builder.appName("Transformation Scratchpad").getOrCreate()
+   
+   # Load the Bronze data (replace <your_initials>)
+   bronze_path = "abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans"
+   df_loans = spark.read.format("delta").load(bronze_path)
+   ```
+3. Chain your transformations to filter, clean, and aggregate the data:
+   ```python
+   # Apply Transformations
+   df_transformed = (
+       df_loans
+       .filter(col("status") == "APPROVED")
+       .withColumn("applicant_ssn", regexp_replace(col("applicant_ssn"), "-", ""))
+   )
+   
+   # Example Aggregation
+   df_summary = (
+       df_transformed
+       .groupBy("state")
+       .agg(avg("loan_amount").alias("average_loan_amount"))
+   )
+   
+   # Display the results in the notebook
+   df_summary.show()
+   ```
+
+> [!NOTE]
+> **Why a Scratchpad?** Notice how we combined filtering/cleansing logic and aggregation logic in the same script? In a formal production architecture, these belong in different layers! In **Module 3**, we will abandon this scratchpad and properly split this logic into the **Silver Layer** (Cleansing) and the **Gold Layer** (Aggregations).
 
 ---
 
@@ -109,4 +140,4 @@ Before we build the formal Silver pipelines in Module 3, let's practice transfor
 > **Answer:** "Chaining many `withColumn()` statements consecutively can cause a massive performance overhead during the Catalyst Optimizer's planning phase, resulting in Driver node hangs. This is because each `withColumn` forces Spark to build a new internal projection in the logical plan. If I need to modify or create 20 columns, I will instead use a single `select()` statement with multiple `col()` manipulations, which compiles into a single projection step and is much faster to optimize."
 
 ---
-[⬅️ Previous: Lesson 2.4: Ingesting HTTP APIs](lesson-2.4-ingest-http-fraud-api.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Project Task 2](project-task-02.md)
+[⬅️ Previous: Lesson 2.4: Ingesting HTTP APIs](lesson-2.4-ingest-http-fraud-api.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Lesson 2.6: Local Unit Testing](lesson-2.6-local-pyspark-and-pytest.md)

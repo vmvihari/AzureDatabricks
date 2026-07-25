@@ -1,4 +1,4 @@
-# Lesson 8.2: Interactive Debugging with Databricks Connect
+# Lesson 3.5: Interactive Debugging with Databricks Connect
 
 ## Table of Contents
 - [The Limitation of Local Testing](#the-limitation-of-local-testing)
@@ -10,7 +10,7 @@
 
 ## The Limitation of Local Testing
 
-In Lesson 8.1, we used `pytest` to validate our pure transformation logic on a mock dataset of 2 rows. 
+In Lesson 2.6, we used `pytest` to validate our pure transformation logic on a mock dataset of 2 rows. 
 
 But what if you need to test against a 50GB Parquet file stored in ADLS Gen2? What if your code needs to query Unity Catalog to read from the `gold` schema? 
 
@@ -83,4 +83,4 @@ You will see the output print in your local terminal, proving that your laptop s
 > **Answer:** "Databricks Connect bridges the gap between local IDEs and cloud compute. It allows me to write code in VS Code, set local breakpoints, and use local Git, while offloading the actual Spark execution and data processing to a remote cluster. This is essential when I need to develop against real, massive datasets in ADLS Gen2 or Unity Catalog that my local machine cannot process or authenticate against."
 
 ---
-[⬅️ Previous: Lesson 8.1: Local Pytest](lesson-8.1-local-pyspark-and-pytest.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Lesson 8.3: Asset Bundles](lesson-8.3-asset-bundles-and-integration.md)
+[⬅️ Previous: Lesson 3.4: Silver to Gold Aggregations](lesson-3.4-silver-to-gold-aggregations.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Project Task 3](project-task-03.md)
