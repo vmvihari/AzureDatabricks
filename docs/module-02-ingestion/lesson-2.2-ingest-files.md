@@ -197,7 +197,59 @@ pytest tests/test_ingest_loans_bronze.py
 ```
 You should see a green dot `.` indicating your test passed instantly, proving your schema logic is sound without ever touching Azure!
 
-*(Note: We will cover testing cloud connectivity with Databricks Connect in **Lesson 3.5**).*
+---
+
+## 🚀 Action Step: Deploy & Verify — First Real Data in the Pipeline
+
+Your local tests pass. Now it's time to run this script against the real Azure infrastructure and populate the Bronze Delta table for the first time.
+
+> [!IMPORTANT]
+> **This is the first actual code deployment of the course.** Up until now we have only verified infrastructure (Lesson 1.4). This step produces real data in ADLS Gen2.
+
+### Step 1: Install Databricks Connect (One-Time Setup)
+Databricks Connect allows you to run PySpark code locally while all Spark operations execute on your Azure Databricks cluster.
+
+```bash
+# Install — version must match your cluster's Databricks Runtime version
+pip install databricks-connect==14.3.0
+
+# Authenticate (browser-based OAuth login)
+databricks configure
+```
+Enter your workspace URL (e.g., `https://adb-XXXX.azuredatabricks.net`) and follow the browser login flow.
+
+> [!TIP]
+> Check your cluster's DBR version in the Databricks workspace under **Compute → Your Cluster → Configuration → Databricks Runtime Version**.
+
+### Step 2: Run the Ingestion Script Against the Cloud
+
+```bash
+python apps/mortgage-data-platform/src/bronze/ingest_loans_bronze.py
+```
+
+What happens:
+- Python code executes **locally** on your machine
+- The moment Spark reads `abfss://bronze@...` (the ADLS landing zone), the operation is **sent to your Azure cluster**
+- The cluster reads `sample_loans.csv` (uploaded in Lesson 1.4), applies your schema, and writes a Bronze Delta table back to ADLS
+- You will see Spark logs streaming back to your local terminal
+
+### Step 3: Verify in Databricks
+
+Open a Databricks notebook and confirm the Bronze Delta table was created:
+
+```python
+# Run in a Databricks notebook to verify
+files = dbutils.fs.ls("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans/")
+display(files)
+
+# Read the Delta table and display a sample
+df = spark.read.format("delta").load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans/")
+df.show()
+```
+
+**Expected output:** 5 rows from `sample_loans.csv` with your enforced schema — `loan_id`, `applicant_ssn`, `loan_amount`, `credit_score`, `state`, `status`.
+
+✅ **Bronze is live.** The Medallion Architecture has real data flowing through it for the first time.
 
 ---
 

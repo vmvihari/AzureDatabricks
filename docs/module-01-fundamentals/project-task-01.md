@@ -32,4 +32,4 @@ You must provision an **Azure SQL Database** and secure its credentials, without
 **[✅ View Solution](solution-01.md)**
 
 ---
-[⬅️ Previous: Lesson 1.3: Security Fundamentals](lesson-1.3-security-fundamentals.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 2: PySpark & Data Ingestion](../module-02-ingestion/README.md)
+[⬅️ Previous: Lesson 1.4: Infrastructure Smoke Test](lesson-1.4-infrastructure-smoke-test.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 2: PySpark & Data Ingestion](../module-02-ingestion/README.md)

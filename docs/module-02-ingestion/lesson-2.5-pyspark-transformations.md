@@ -165,4 +165,4 @@ pytest tests/test_transformations.py
 > **Answer:** "Chaining many `withColumn()` statements consecutively can cause a massive performance overhead during the Catalyst Optimizer's planning phase, resulting in Driver node hangs. This is because each `withColumn` forces Spark to build a new internal projection in the logical plan. If I need to modify or create 20 columns, I will instead use a single `select()` statement with multiple `col()` manipulations, which compiles into a single projection step and is much faster to optimize."
 
 ---
-[⬅️ Previous: Lesson 2.4: Ingesting HTTP APIs](lesson-2.4-ingest-http-fraud-api.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Project Task 2](project-task-02.md)
+[⬅️ Previous: Lesson 2.4: Ingesting HTTP APIs](lesson-2.4-ingest-http-fraud-api.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Lesson 2.6: Continuous Integration](lesson-2.6-github-actions-ci.md)
