@@ -34,7 +34,7 @@ You must write a PySpark script to ingest these credit scores into the Bronze la
 
 ---
 
-**[✅ View Solution](project-task-02-solution.md)**
+**[✅ View Solution](solution-02.md)**
 
 ---
 [⬅️ Previous: Lesson 2.5: PySpark Transformations](lesson-2.5-pyspark-transformations.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 3: Medallion Architecture & ML](../module-03-medallion-and-ml/README.md)

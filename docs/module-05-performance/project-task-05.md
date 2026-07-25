@@ -34,7 +34,7 @@ You must optimize this table to support sub-second lookup times.
 
 ---
 
-**[✅ View Solution](project-task-05-solution.md)**
+**[✅ View Solution](solution-05.md)**
 
 ---
 [⬅️ Previous: Lesson 5.4: Data Skew and Spill](lesson-5.4-data-skew-and-spill.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Module 6: Unity Catalog & Governance](../module-06-governance/README.md)
