@@ -1,24 +1,10 @@
 import os
-import sys
 import tempfile
 
-import pytest
-from pyspark.sql import SparkSession
 from pyspark.sql.types import DoubleType
 
 # Import the actual logic from our script
 from src.bronze.ingest_loans_bronze import get_loan_schema
-
-# Fix for Windows: Ensure Spark uses the current Python executable
-os.environ["PYSPARK_PYTHON"] = sys.executable
-os.environ["PYSPARK_DRIVER_PYTHON"] = sys.executable
-os.environ["_JAVA_OPTIONS"] = "-Djava.net.preferIPv4Stack=true"
-
-
-@pytest.fixture(scope="session")
-def spark():
-    """Spins up a lightning-fast, local-only Spark session in your laptop's RAM."""
-    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
 
 
 def test_bronze_schema_enforcement(spark):

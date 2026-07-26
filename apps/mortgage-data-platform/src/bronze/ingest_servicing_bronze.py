@@ -1,5 +1,5 @@
-from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
+from src.utils.spark import get_spark_session
 
 
 def extract_recent_events(df):
@@ -12,7 +12,7 @@ def extract_recent_events(df):
 
 if __name__ == "__main__":
     # Initialize Spark Session
-    spark = SparkSession.builder.appName("IngestServicingBronze").getOrCreate()
+    spark = get_spark_session("IngestServicingBronze")
 
     # In a Databricks environment, dbutils is available by default.
     # For local testing, we would mock this.

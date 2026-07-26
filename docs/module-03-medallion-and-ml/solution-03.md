@@ -7,10 +7,10 @@ Here is the best-practice PySpark solution for cleansing the credit scores (Silv
 Create this script at `apps/mortgage-data-platform/src/silver/cleansed_credit_scores.py`.
 
 ```python
-from pyspark.sql import SparkSession
+from src.utils.spark import get_spark_session
 from pyspark.sql.functions import col
 
-spark = SparkSession.builder.appName("Silver Credit Scores").getOrCreate()
+spark = get_spark_session("Silver Credit Scores")
 
 bronze_path = "abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_credit_scores"
 silver_path = "abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_credit_scores"
@@ -40,10 +40,10 @@ silver_df = (
 Create this script at `apps/mortgage-data-platform/src/gold/credit_exposure.py`.
 
 ```python
-from pyspark.sql import SparkSession
+from src.utils.spark import get_spark_session
 from pyspark.sql.functions import col, sum as _sum, when
 
-spark = SparkSession.builder.appName("Gold Credit Exposure").getOrCreate()
+spark = get_spark_session("Gold Credit Exposure")
 
 silver_loans_path = "abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans"
 silver_scores_path = "abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_credit_scores"

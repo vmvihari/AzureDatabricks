@@ -99,19 +99,8 @@ Instead of deploying a massive cluster just to see if our `regexp_replace` synta
 2. Write the following code to test a cleansing transformation and an aggregation locally:
 
 ```python
-import os
-import sys
 import pytest
-from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, regexp_replace, avg
-
-# Fix for Windows: Ensure Spark uses the current Python executable
-os.environ['PYSPARK_PYTHON'] = sys.executable
-os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
-
-@pytest.fixture(scope="session")
-def spark():
-    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
 
 # The logic we want to test
 def cleanse_and_aggregate(df):

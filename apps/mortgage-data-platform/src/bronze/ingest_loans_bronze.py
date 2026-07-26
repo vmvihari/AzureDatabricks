@@ -1,4 +1,3 @@
-from pyspark.sql import SparkSession
 from pyspark.sql.types import (
     DoubleType,
     IntegerType,
@@ -6,6 +5,7 @@ from pyspark.sql.types import (
     StructField,
     StructType,
 )
+from src.utils.spark import get_spark_session
 
 
 def get_loan_schema():
@@ -25,7 +25,7 @@ def get_loan_schema():
 
 if __name__ == "__main__":
     # Initialize Spark Session (Databricks runtime provides `spark` by default, but this is best practice)
-    spark = SparkSession.builder.appName("IngestLoansBronze").getOrCreate()
+    spark = get_spark_session("IngestLoansBronze")
 
     # 1. Define strict schema
     loan_schema = get_loan_schema()

@@ -1,20 +1,5 @@
-import os
-import sys
-
-import pytest
-from pyspark.sql import SparkSession
-
 # Import the actual logic from our script
 from src.bronze.ingest_servicing_bronze import extract_recent_events
-
-# Fix for Windows: Ensure Spark uses the current Python executable
-os.environ["PYSPARK_PYTHON"] = sys.executable
-os.environ["PYSPARK_DRIVER_PYTHON"] = sys.executable
-
-
-@pytest.fixture(scope="session")
-def spark():
-    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
 
 
 def test_jdbc_date_filtering(spark):
