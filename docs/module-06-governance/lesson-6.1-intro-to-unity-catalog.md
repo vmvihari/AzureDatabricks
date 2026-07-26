@@ -40,7 +40,18 @@ SELECT * FROM mortgage_prod.silver.loans;
 
 ---
 
-## 🛠️ Action Step (SQL Script): Setting up the Mortgage Catalog
+## Managed vs External Tables
+
+Before Unity Catalog, we wrote data directly to cloud storage paths (e.g., `abfss://...`) and optionally registered "External Tables" on top of them. 
+
+With Unity Catalog, the enterprise standard is to use **Managed Tables**. 
+- You do NOT specify an `abfss://` path in your PySpark code. 
+- You simply tell Spark to write to `mortgage_prod.silver.loans`.
+- Unity Catalog automatically provisions the secure cloud storage under the hood, manages the file lifecycle, and applies strict governance.
+
+---
+
+## 🛠️ Action Step 1 (SQL): Setting up the Mortgage Catalog
 
 Let's establish our Unity Catalog namespace for the Mortgage Data Platform.
 
@@ -61,12 +72,30 @@ USE CATALOG mortgage_prod;
 CREATE SCHEMA IF NOT EXISTS bronze;
 CREATE SCHEMA IF NOT EXISTS silver;
 CREATE SCHEMA IF NOT EXISTS gold;
-
--- Example of creating a table in UC pointing to our ADLS data
-CREATE TABLE IF NOT EXISTS silver.loans
-USING DELTA
-LOCATION 'abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans';
 ```
+
+---
+
+## 🛠️ Action Step 2 (Python): Refactoring for Managed Tables
+
+Now for the true power of Unity Catalog. Go back into your Python scripts from Modules 2, 3, and 4 and delete the raw ADLS paths!
+
+1. Open `apps/mortgage-data-platform/src/bronze/ingest_loans_bronze.py` (and your other ingestion scripts).
+2. Change the `.save()` method to use `.saveAsTable()`.
+
+**Old Code (Legacy):**
+```python
+(df.write.format("delta").mode("append")
+    .save("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans"))
+```
+
+**New Code (Modern Unity Catalog):**
+```python
+(df.write.format("delta").mode("append")
+    .saveAsTable("mortgage_prod.bronze.loans"))
+```
+
+Do this for your Silver cleansing, Fraud API integration, and Gold aggregation scripts. Replace all `abfss://` load/save paths with `mortgage_prod.schema.table` reads and writes. Your pipeline is now fully governed by Unity Catalog!
 
 ---
 

@@ -1,5 +1,8 @@
 # Module 1: Cloud Fundamentals & Azure Setup
 
+> [!WARNING]
+> **Billing Disclaimer:** Creating the Azure resources described in this module (Databricks, Key Vault, Storage Accounts) follows standard Azure billing rates and **will incur costs**.
+
 In this module, you will learn the foundational concepts of modern Data Analytics, the Medallion Architecture, and how to provision and secure the core Azure resources required for the Mortgage Data Platform.
 
 ## Table of Contents

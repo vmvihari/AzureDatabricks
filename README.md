@@ -1,5 +1,8 @@
 # Azure Databricks Knowledge Repository
 
+> [!WARNING]
+> **Billing Disclaimer:** This curriculum teaches production-grade enterprise deployments. Following the steps in these modules to provision Azure resources (such as Databricks Workspaces, Azure Data Lake, Azure SQL Databases, etc.) follows standard Azure and Databricks billing models and **will incur financial costs**. Please ensure you are aware of the costs associated with these services and delete resources when you are finished testing.
+
 Welcome to the Azure Databricks Knowledge Repository! This repository contains a comprehensive, hands-on curriculum for mastering Databricks, Data Engineering, and Lakehouse architectures using a real-world enterprise use case: the **Mortgage Data Platform (MDP)**.
 
 ## 📚 Curriculum Overview
@@ -59,3 +62,11 @@ Before starting the modules, you can use this utility to locally generate millio
 
 ## Getting Started
 Navigate to **[Module 1](docs/module-01-fundamentals/README.md)** to begin the curriculum. Follow the lessons sequentially, and complete the **Project Task** at the end of each module to build the platform.
+
+---
+
+## 🧹 Clean Up Resources
+
+> [!CAUTION]
+> **Avoid Surprise Bills!** When you have completed the curriculum, **do not forget to delete your resources**. 
+> The easiest way to do this is to log into the [Azure Portal](https://portal.azure.com/), navigate to the Resource Group you created in Module 1, and delete the entire Resource Group. This will safely destroy the Databricks workspace, the Azure SQL database, the Storage Accounts, and the Key Vaults in one action, ensuring you are no longer billed.

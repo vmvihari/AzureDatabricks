@@ -15,21 +15,16 @@ The Credit Bureau pipeline creates a Silver table (`silver_current_credit_scores
 
 The Chief Risk Officer needs their team (the `risk_team` group) to query the Gold dashboard table. However, the Silver table contains highly sensitive SSNs that the risk team is not legally authorized to view in raw format.
 
-You must create a single SQL script to register the tables and enforce governance.
+You must create a single SQL script to enforce governance on these tables.
 
 1. **The Governance Script:**
    - In `apps/mortgage-data-platform/src/governance/`, create a new script named `secure_credit_feed.sql`.
 
-2. **Register the Tables:**
-   - Write the SQL to register the two existing Delta tables into Unity Catalog using the `CREATE TABLE IF NOT EXISTS` syntax with the `LOCATION` keyword pointing to their `abfss://` ADLS paths.
-   - Register them as:
-     - `mortgage_prod.silver.current_credit_scores`
-     - `mortgage_prod.gold.credit_exposure`
+2. **Grant RBAC Access:**
+   - Assuming you have already refactored your PySpark code to write these as Managed Tables (`mortgage_prod.silver.current_credit_scores` and `mortgage_prod.gold.credit_exposure`), write the SQL `GRANT` statements to give the `risk_team` group usage on the catalog and gold schema, and `SELECT` access *only* on the Gold table.
 
-3. **Grant RBAC Access:**
-   - Write the SQL `GRANT` statements to give the `risk_team` group usage on the catalog and gold schema, and `SELECT` access *only* on the Gold table.
 
-4. **Apply Dynamic Data Masking:**
+3. **Apply Dynamic Data Masking:**
    - You do not need to create a new masking function. The `silver.mask_ssn` UDF you created in Lesson 6.3 already exists in Unity Catalog!
    - Write the `ALTER TABLE` SQL command to apply `silver.mask_ssn` to the `ssn` column of the `mortgage_prod.silver.current_credit_scores` table.
 

@@ -73,7 +73,58 @@ This tells Spark to open 10 concurrent connections to the database, each queryin
 
 ---
 
-## 🛠️ Action Step: Ingesting Servicing Events
+## 🛠️ Action Step 1: Provisioning the Source Database
+
+Before we can ingest data, we need a source database that actually exists! We will use the Azure SQL Database to act as our simulated "Mortgage Loan Origination System".
+
+> [!WARNING]
+> **Cost Warning:** Azure SQL Databases cost money. Please ensure you select the **Basic** tier (approx $5/month) or **Serverless** tier when deploying, and delete it when you are finished with the course.
+
+### The Production Standard: Infrastructure as Code (Terraform)
+In an enterprise, you don't click through the Azure Portal to create databases. You write Terraform.
+Add the following to your `infrastructure/main.tf` (if you are maintaining one), or run `terraform apply` in a new directory:
+
+```hcl
+resource "azurerm_mssql_server" "sql_server" {
+  name                         = "az-sql-mortgage-db"
+  resource_group_name          = azurerm_resource_group.rg.name
+  location                     = azurerm_resource_group.rg.location
+  version                      = "12.0"
+  administrator_login          = "sqladmin"
+  administrator_login_password = "SuperSecretPassword123!"
+}
+
+resource "azurerm_mssql_database" "sql_db" {
+  name      = "MortgageServicing"
+  server_id = azurerm_mssql_server.sql_server.id
+  sku_name  = "Basic"
+}
+```
+
+### Seeding the Data
+Once the database is online, it is empty. We will use the repository's native data generator to populate it with realistic CDC events.
+
+1. Open your local terminal.
+2. Navigate to `apps/data-generator/` and run `python generate_servicing.py --rows 500`. This creates a CSV of realistic CDC events.
+3. Open a python shell or Jupyter notebook locally, and use `pandas` to push that CSV into your new Azure SQL Database:
+
+```python
+import pandas as pd
+from sqlalchemy import create_engine
+
+# Load the generated data
+df = pd.read_csv("data/raw/servicing_events.csv")
+
+# Create connection (replace with your actual password and server name)
+engine = create_engine("mssql+pyodbc://sqladmin:SuperSecretPassword123!@az-sql-mortgage-db.database.windows.net/MortgageServicing?driver=ODBC+Driver+17+for+SQL+Server")
+
+# Bulk insert into the Azure SQL Database
+df.to_sql("LoanServicingEvents", con=engine, schema="dbo", if_exists="replace", index=False)
+```
+
+---
+
+## 🛠️ Action Step 2: Ingesting Servicing Events
 Let's build the extraction script for our operational database.
 
 1. Navigate to `apps/mortgage-data-platform/src/bronze/` and create `ingest_servicing_bronze.py`.
@@ -133,7 +184,7 @@ if __name__ == "__main__":
 
 ---
 
-## 🛠️ Action Step: Local Unit Testing for JDBC
+## 🛠️ Action Step 3: Local Unit Testing for JDBC
 
 Because your local laptop cannot easily connect to the secured Azure SQL Server (and shouldn't during a unit test!), we must test our JDBC logic by *mocking* the DataFrameReader.
 
