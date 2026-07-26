@@ -162,7 +162,25 @@ run: pytest tests/unit/ --cov=src --cov-fail-under=70
 
 **3. Artifact upload:** Test results are saved as a GitHub Actions artifact so they can be inspected even if the job fails.
 
-### Step 3: Enforce the gate in GitHub
+### Step 3: Configure Coverage Exclusions
+
+Because our unit tests only test our pure Python functions (and not the `if __name__ == "__main__":` blocks which contain network/Databricks I/O logic), our code coverage will artificially drop well below 70%, failing the pipeline immediately. 
+
+To fix this, we must tell `pytest-cov` to exclude those blocks from its coverage calculations.
+
+Navigate to `apps/mortgage-data-platform/` and create `.coveragerc`:
+```ini
+[run]
+omit =
+    */__init__.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
+```
+
+### Step 4: Enforce the gate in GitHub
 
 To make Gate 3 actually block merges:
 1. Go to your GitHub repository → **Settings → Branches**
