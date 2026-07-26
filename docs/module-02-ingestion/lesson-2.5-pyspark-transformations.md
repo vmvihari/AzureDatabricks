@@ -103,7 +103,6 @@ import os
 import sys
 import pytest
 from pyspark.sql import SparkSession
-from pyspark.sql import Row
 from pyspark.sql.functions import col, regexp_replace, avg
 
 # Fix for Windows: Ensure Spark uses the current Python executable
@@ -125,9 +124,12 @@ def cleanse_and_aggregate(df):
 def test_transformations(spark):
     # 1. Arrange: Create mock data using Spark SQL to bypass Python worker socket issues on Windows
     df_in = spark.sql("""
-        SELECT 1 as loan_id, '123-45' as applicant_ssn, CAST(100.0 AS DOUBLE) as loan_amount, 'TX' as state, 'APPROVED' as status UNION ALL
-        SELECT 2 as loan_id, '999-99' as applicant_ssn, CAST(200.0 AS DOUBLE) as loan_amount, 'TX' as state, 'DENIED' as status UNION ALL
-        SELECT 3 as loan_id, '111-11' as applicant_ssn, CAST(300.0 AS DOUBLE) as loan_amount, 'TX' as state, 'APPROVED' as status
+        SELECT 1 as loan_id, '123-45' as applicant_ssn, CAST(100.0 AS DOUBLE) as loan_amount,
+            'TX' as state, 'APPROVED' as status UNION ALL
+        SELECT 2 as loan_id, '999-99' as applicant_ssn, CAST(200.0 AS DOUBLE) as loan_amount,
+            'TX' as state, 'DENIED' as status UNION ALL
+        SELECT 3 as loan_id, '111-11' as applicant_ssn, CAST(300.0 AS DOUBLE) as loan_amount,
+            'TX' as state, 'APPROVED' as status
     """)
     
     # 2. Act

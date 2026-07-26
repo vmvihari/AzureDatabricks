@@ -196,7 +196,6 @@ import os
 import sys
 import pytest
 from pyspark.sql import SparkSession
-from pyspark.sql import Row
 
 # Import the actual logic from our script
 from src.bronze.ingest_servicing_bronze import extract_recent_events

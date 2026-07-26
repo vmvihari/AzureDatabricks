@@ -194,7 +194,6 @@ import tempfile
 import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import DoubleType
-from pyspark.sql import Row
 
 # Import the actual logic from our script
 from src.bronze.ingest_loans_bronze import get_loan_schema

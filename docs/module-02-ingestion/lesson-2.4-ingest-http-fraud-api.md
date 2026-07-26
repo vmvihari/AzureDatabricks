@@ -124,8 +124,8 @@ if __name__ == "__main__":
     
     # In Databricks, we write to ADLS using standard python I/O by writing to the /dbfs mount or using dbutils.fs.put
     # For this exercise, we will assume dbutils.fs.put
-    destination_path = "abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/fraud_blacklist/blacklist_today.json"
-    
+    base_path = "abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net"
+    destination_path = f"{base_path}/landing/fraud_blacklist/blacklist_today.json"
     try:
         dbutils.fs.put(destination_path, json.dumps(data), overwrite=True)
         print(f"Successfully landed API data to {destination_path}")
@@ -148,7 +148,6 @@ pip install responses pytest
 3. Add the following code to simulate the API response:
 
 ```python
-import pytest
 import responses
 
 # Import the actual logic from our script
