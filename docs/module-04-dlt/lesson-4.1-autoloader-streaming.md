@@ -111,6 +111,7 @@ os.environ['_JAVA_OPTIONS'] = "-Djava.net.preferIPv4Stack=true"
 def spark():
     return get_spark_session("LocalTest")
 
+@pytest.mark.skipif(sys.platform == 'win32', reason="Spark local file I/O requires Hadoop winutils on Windows")
 def test_autoloader_memory_sink(spark):
     # Auto Loader testing requires writing actual files to a temp directory to simulate landing data
     temp_dir = tempfile.mkdtemp()

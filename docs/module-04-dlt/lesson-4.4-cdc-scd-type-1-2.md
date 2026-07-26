@@ -80,11 +80,19 @@ dlt.apply_changes(
 
 CDC logic is critical to validate, ensuring updates apply correctly and out-of-order events don't corrupt the data.
 
-1. Inject a mock JSON payload into your `servicing_cdc` landing path containing an initial balance for a mock `loan_id`.
-2. Run the DLT pipeline using Databricks Asset Bundles (`databricks bundle run`) and verify the Silver table reflects the initial balance.
-3. Inject a second JSON payload with a *newer* timestamp but a different balance (simulating a payment). Run the pipeline again.
-4. Verify the Silver table updated the balance correctly.
-5. (Optional but highly recommended) Inject a third JSON payload with an *older* timestamp than the second payload. Run the pipeline again and verify the Silver table ignores it!
+1. Create a local file named `event_1.json` with an initial balance:
+    ```json
+    {"event_id": "e1", "loan_id": "L-123", "balance": 500000.0, "event_timestamp": "2023-10-01T10:00:00Z"}
+    ```
+2. Upload `event_1.json` into your ADLS Gen2 `bronze` container under `landing/servicing_cdc/` using **Azure Storage Explorer**.
+3. Run the DLT pipeline using Databricks Asset Bundles (`databricks bundle run`) and verify the Silver table reflects the initial balance.
+4. Create a second file named `event_2.json` with a newer timestamp but a different balance (simulating a payment):
+    ```json
+    {"event_id": "e2", "loan_id": "L-123", "balance": 490000.0, "event_timestamp": "2023-10-02T10:00:00Z"}
+    ```
+5. Upload `event_2.json` to the same landing zone and run the pipeline again.
+6. Verify the Silver table updated the balance correctly.
+7. (Optional but highly recommended) Create `event_3.json` with an *older* timestamp than the second payload (e.g. `"2023-10-01T15:00:00Z"`). Upload it, run the pipeline, and verify the Silver table correctly ignores the stale update!
 
 ---
 

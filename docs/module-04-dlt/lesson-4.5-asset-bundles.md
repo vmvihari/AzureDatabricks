@@ -42,7 +42,7 @@ bundle:
   name: mortgage-data-platform
 
 workspace:
-  host: https://adb-dev-workspace-12345.azuredatabricks.net
+  host: <your_databricks_workspace_url>
 
 resources:
   jobs:
@@ -92,4 +92,4 @@ You can now monitor the output in your terminal. If the pipeline runs from end-t
 > **Answer:** "I never test in production. I utilize Databricks Asset Bundles (DABs) to define my data pipelines as YAML. From my local machine or a CI pipeline, I run `databricks bundle deploy` targeting an isolated Development or Staging workspace. I then run `databricks bundle run` to execute the entire DAG. This validates that the Python code, the cluster configurations, and the Unity Catalog permissions all integrate flawlessly before the code ever reaches the Production workspace."
 
 ---
-[⬅️ Previous: Lesson 4.4: CDC & SCDs](lesson-4.4-cdc-scd-type-1-2.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Project Task 4](project-task-04.md)
+[⬅️ Previous: Lesson 4.4: CDC & SCDs](lesson-4.4-cdc-scd-type-1-2.md) | [🏠 Main Directory](../../README.md) | [➡️ Next: Lesson 4.6: Bonus - LakeFlow Connect](lesson-4.6-lakeflow-connect.md)
