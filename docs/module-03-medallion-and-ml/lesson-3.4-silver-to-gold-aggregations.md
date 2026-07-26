@@ -98,16 +98,18 @@ As always, aggregation logic should be validated locally before it hits the Data
 5. Run `pytest tests/unit/test_gold_aggregations.py` to validate your math.
 
 ```python
-import pytest
 from src.gold.state_risk_summary import aggregate_risk_by_state
 
 def test_aggregate_risk_by_state(spark):
     # Create the mock DataFrame using native Spark SQL
     # This completely bypasses PySpark's RDD Python worker socket on Windows
     df_in = spark.sql("""
-        SELECT 'TX' as state, CAST(100.0 AS DOUBLE) as loan_amount, True as is_fraud_flagged, 700 as credit_score UNION ALL
-        SELECT 'TX' as state, CAST(200.0 AS DOUBLE) as loan_amount, False as is_fraud_flagged, 720 as credit_score UNION ALL
-        SELECT 'CA' as state, CAST(500.0 AS DOUBLE) as loan_amount, False as is_fraud_flagged, 800 as credit_score
+        SELECT 'TX' as state, CAST(100.0 AS DOUBLE) as loan_amount,
+            True as is_fraud_flagged, 700 as credit_score UNION ALL
+        SELECT 'TX' as state, CAST(200.0 AS DOUBLE) as loan_amount,
+            False as is_fraud_flagged, 720 as credit_score UNION ALL
+        SELECT 'CA' as state, CAST(500.0 AS DOUBLE) as loan_amount,
+            False as is_fraud_flagged, 800 as credit_score
     """)
     
     df_out = aggregate_risk_by_state(df_in)

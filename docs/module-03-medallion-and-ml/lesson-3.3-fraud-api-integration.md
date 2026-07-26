@@ -105,7 +105,6 @@ Just like the cleansing pipeline, this integration script should be tested befor
 5. Run `pytest tests/unit/test_fraud_flagging.py` in your local terminal to validate the join logic.
 
 ```python
-import pytest
 from src.silver.fraud_flagging import flag_fraud
 
 def test_flag_fraud_broadcast_join(spark):
@@ -123,10 +122,16 @@ def test_flag_fraud_broadcast_join(spark):
     df_flagged = flag_fraud(df_loans, df_blacklist)
     
     # Assert L-01 is False
-    assert df_flagged.filter(df_flagged.loan_id == "L-01").first()["is_fraud_flagged"] == False
+    assert (
+        df_flagged.filter(df_flagged.loan_id == "L-01").first()["is_fraud_flagged"]
+        is False
+    )
     
     # Assert L-02 is True
-    assert df_flagged.filter(df_flagged.loan_id == "L-02").first()["is_fraud_flagged"] == True
+    assert (
+        df_flagged.filter(df_flagged.loan_id == "L-02").first()["is_fraud_flagged"]
+        is True
+    )
 ```
 
 ---

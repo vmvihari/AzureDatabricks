@@ -103,7 +103,6 @@ As discussed in Module 2, you must test your transformation logic locally before
 4. Run `pytest tests/unit/test_silver_cleansing.py` in your local terminal to validate your code.
 
 ```python
-import pytest
 from src.silver.cleansed_loans import cleanse_loans
 
 def test_cleansing_drops_null_ssns_and_formats_strings(spark):
