@@ -144,10 +144,10 @@ Each `__init__.py` can simply contain a single comment:
 
 ### 2. Write the Test
 
-1. Navigate to `apps/mortgage-data-platform/tests/` (create it if it doesn't exist).
+1. Navigate to `apps/mortgage-data-platform/tests/unit/` (create it if it doesn't exist).
 2. Create `test_silver_cleansing.py`.
 3. Write a `pytest` test that passes a mock DataFrame containing a null SSN to your cleansing function, and asserts that the resulting DataFrame has dropped that row.
-4. Run `pytest tests/test_silver_cleansing.py` in your local terminal to validate your code.
+4. Run `pytest tests/unit/test_silver_cleansing.py` in your local terminal to validate your code.
 
 ```python
 import os

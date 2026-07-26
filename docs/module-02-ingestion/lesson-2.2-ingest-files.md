@@ -149,8 +149,8 @@ pip install pyspark pytest
 ### 2. Write the Test
 In order to test our script without actually hitting the ADLS cloud storage, we will refactor our script's logic into a function that takes a DataFrame, and then we will feed it a "mock" DataFrame.
 
-1. Create a `tests/` directory at the root of `apps/mortgage-data-platform/`.
-2. Inside `tests/`, create `test_ingest_loans_bronze.py`.
+1. Create a `tests/unit/` directory at the root of `apps/mortgage-data-platform/`.
+2. Inside `tests/unit/`, create `test_ingest_loans_bronze.py`.
 3. Add the following code:
 
 ```python
@@ -199,7 +199,7 @@ def test_bronze_schema_enforcement(spark):
 ### 3. Run the Test
 Run the test from your terminal:
 ```bash
-pytest tests/test_ingest_loans_bronze.py
+pytest tests/unit/test_ingest_loans_bronze.py
 ```
 You should see a green dot `.` indicating your test passed instantly, proving your schema logic is sound without ever touching Azure!
 

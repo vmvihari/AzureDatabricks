@@ -100,11 +100,11 @@ if __name__ == "__main__":
 
 As always, aggregation logic should be validated locally before it hits the Databricks cluster.
 
-1. Navigate to `apps/mortgage-data-platform/tests/`.
+1. Navigate to `apps/mortgage-data-platform/tests/unit/`.
 2. Create `test_gold_aggregations.py`.
 3. Write a `pytest` test that creates a mock DataFrame representing `silver_loans` with 3 rows (e.g., 2 loans in "TX" and 1 in "CA"). Ensure one of the TX loans is flagged for fraud.
 4. Pass the mock DataFrame to your aggregation function and assert that the output DataFrame correctly has 2 rows (one for TX, one for CA), and that the TX `total_fraud_flags` equals 1.
-5. Run `pytest tests/test_gold_aggregations.py` to validate your math.
+5. Run `pytest tests/unit/test_gold_aggregations.py` to validate your math.
 
 ```python
 import os

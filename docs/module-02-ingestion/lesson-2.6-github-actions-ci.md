@@ -157,7 +157,7 @@ Key features of the Gate 3 job:
 **2. Coverage threshold:** The `--cov-fail-under=70` flag fails the CI job if code coverage drops below 70%. This prevents developers from shipping new, untested code.
 
 ```yaml
-run: pytest tests/ --cov=src --cov-fail-under=70
+run: pytest tests/unit/ --cov=src --cov-fail-under=70
 ```
 
 **3. Artifact upload:** Test results are saved as a GitHub Actions artifact so they can be inspected even if the job fails.

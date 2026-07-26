@@ -95,7 +95,7 @@ Before we build the formal Medallion pipelines in Module 3, let's practice these
 
 Instead of deploying a massive cluster just to see if our `regexp_replace` syntax works, we will write a unit test.
 
-1. Navigate to `apps/mortgage-data-platform/tests/` and create `test_transformations.py`.
+1. Navigate to `apps/mortgage-data-platform/tests/unit/` and create `test_transformations.py`.
 2. Write the following code to test a cleansing transformation and an aggregation locally:
 
 ```python
@@ -146,7 +146,7 @@ def test_transformations(spark):
 
 3. Run the test:
 ```bash
-pytest tests/test_transformations.py
+pytest tests/unit/test_transformations.py
 ```
 
 > [!NOTE]

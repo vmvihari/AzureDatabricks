@@ -89,10 +89,10 @@ if __name__ == "__main__":
 
 Structured Streaming logic can be complex to test. However, we must ensure our Auto Loader pipeline correctly processes data increments.
 
-1. Navigate to `apps/mortgage-data-platform/tests/`.
+1. Navigate to `apps/mortgage-data-platform/tests/unit/`.
 2. Create `test_autoloader_bronze.py`.
 3. In your local `pytest` environment, you can use the `MemorySink` or write to a temporary local Delta table to validate that the schema is enforced and rows are processed as expected.
-4. Run `pytest tests/test_autoloader_bronze.py` in your local terminal.
+4. Run `pytest tests/unit/test_autoloader_bronze.py` in your local terminal.
 
 ```python
 import os

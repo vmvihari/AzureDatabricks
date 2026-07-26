@@ -127,7 +127,7 @@ When writing scripts that make network calls, your unit tests should *never* act
 pip install responses pytest
 ```
 
-2. Create a new file `tests/test_ingest_fraud_api.py`.
+2. Create a new file `tests/unit/test_ingest_fraud_api.py`.
 3. Add the following code to simulate the API response:
 
 ```python
@@ -160,7 +160,7 @@ def test_fetch_fraud_blacklist_success():
 
 4. Run the test:
 ```bash
-pytest tests/test_ingest_fraud_api.py
+pytest tests/unit/test_ingest_fraud_api.py
 ```
 
 *(Note: We will cover integration testing—actually interacting with Azure Key Vault and ADLS—using Databricks Connect in **Lesson 3.5**).*

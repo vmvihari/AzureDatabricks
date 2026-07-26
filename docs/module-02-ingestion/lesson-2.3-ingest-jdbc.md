@@ -137,7 +137,7 @@ if __name__ == "__main__":
 
 Because your local laptop cannot easily connect to the secured Azure SQL Server (and shouldn't during a unit test!), we must test our JDBC logic by *mocking* the DataFrameReader.
 
-1. Create a new file `tests/test_ingest_jdbc.py`.
+1. Create a new file `tests/unit/test_ingest_jdbc.py`.
 2. Add the following code to simulate the database read and ensure your Spark SQL logic functions correctly:
 
 ```python
@@ -175,7 +175,7 @@ def test_jdbc_date_filtering(spark):
 
 3. Run the test:
 ```bash
-pytest tests/test_ingest_jdbc.py
+pytest tests/unit/test_ingest_jdbc.py
 ```
 
 *(Note: We will cover integration testing—actually connecting to the database—using Databricks Connect in **Lesson 3.5**).*
