@@ -115,7 +115,7 @@ def test_cleanse_credit_scores(spark):
 Create the test for the Gold pipeline at `apps/mortgage-data-platform/tests/unit/gold/test_credit_exposure.py`.
 
 ```python
-from src.gold.credit_tier_exposure import aggregate_exposure
+from src.gold.credit_exposure import aggregate_exposure
 
 def test_aggregate_exposure(spark):
     df_loans = spark.sql("""

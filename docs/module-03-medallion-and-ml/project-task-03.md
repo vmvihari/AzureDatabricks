@@ -19,7 +19,7 @@ To do this, you must transform the raw Bronze credit data into a Silver table, a
    - Use `.withColumnRenamed("ssn", "applicant_ssn")` so it matches our loan data standard.
    - In the `__main__` block, read the Bronze table, run your function, and write it out to `abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_credit_scores` in Delta format using `overwrite` mode.
 
-2. **The Gold Pipeline (`src/gold/credit_tier_exposure.py`):**
+2. **The Gold Pipeline (`src/gold/credit_exposure.py`):**
    - Write a testable function `aggregate_exposure(df_loans, df_scores)`.
    - Perform an `inner join` on `applicant_ssn`.
    - Use `withColumn` and the `when().otherwise()` functions to create a `credit_tier` column:
@@ -35,7 +35,7 @@ To do this, you must transform the raw Bronze credit data into a Silver table, a
 
 ## Acceptance Criteria
 - [ ] `cleansed_credit_scores.py` contains a testable function that deduplicates data.
-- [ ] `credit_tier_exposure.py` contains a testable function that aggregates the exposure by tier.
+- [ ] `credit_exposure.py` contains a testable function that aggregates the exposure by tier.
 - [ ] Both Pytest files exist and successfully pass when running `pytest tests/unit/`.
 - [ ] All code adheres to strict PEP 8 Python naming conventions (`snake_case` variables, no hardcoded secrets).
 
