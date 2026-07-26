@@ -146,7 +146,41 @@ Open your local terminal and install the PySpark and Pytest libraries:
 pip install pyspark pytest
 ```
 
-### 2. Write the Test
+### 2. Configure Pytest Module Discovery (Do This Once)
+
+Before you can import from your `src` directory in a test, Python needs two things in place. **Do this once at the start of the project — you will not need to repeat it for future lessons.**
+
+**Step A:** Create a `conftest.py` at the root of `apps/mortgage-data-platform/`. This tells `pytest` to add the project root to Python's module search path:
+
+```python
+# apps/mortgage-data-platform/conftest.py
+import sys
+import os
+
+# Add the project root to sys.path so that `from src.X.Y import Z` imports work
+sys.path.insert(0, os.path.dirname(__file__))
+```
+
+**Step B:** Create empty `__init__.py` files to make each `src` subdirectory a proper Python package. Without these, Python does not recognize them as importable modules:
+
+```text
+apps/mortgage-data-platform/
+├── conftest.py          ← created in Step A
+└── src/
+    ├── __init__.py      ← create this
+    └── bronze/
+        └── __init__.py  ← create this
+```
+
+Each `__init__.py` can simply contain a single comment:
+```python
+# package marker
+```
+
+> [!NOTE]
+> **Why is this needed?** In Python, a directory is only treated as a "package" (importable with dot notation like `src.bronze.ingest_loans_bronze`) if it contains an `__init__.py` file. Without it, `from src.bronze... import ...` will always fail with `ModuleNotFoundError: No module named 'src'`, even if the file physically exists.
+
+### 3. Write the Test
 In order to test our script without actually hitting the ADLS cloud storage, we will refactor our script's logic into a function that takes a DataFrame, and then we will feed it a "mock" DataFrame.
 
 1. Create a `tests/unit/` directory at the root of `apps/mortgage-data-platform/`.
