@@ -39,13 +39,12 @@ Databricks enables AQE by default in modern runtime versions, but it is a senior
 2. At the top of the file, explicitly enable AQE on the `SparkSession`.
 
 ```python
-from pyspark.sql import SparkSession
+from src.utils.spark import get_spark_session
 from pyspark.sql.functions import sum, avg, count
 
-spark = SparkSession.builder \
-    .config("spark.sql.adaptive.enabled", "true") \
-    .config("spark.sql.adaptive.coalescePartitions.enabled", "true") \
-    .getOrCreate()
+spark = get_spark_session("State Risk Summary")
+spark.conf.set("spark.sql.adaptive.enabled", "true")
+spark.conf.set("spark.sql.adaptive.coalescePartitions.enabled", "true")
 
 # ... (rest of the script remains exactly the same)
 ```

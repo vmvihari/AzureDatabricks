@@ -43,9 +43,9 @@ Enterprise Data Lakes must have scheduled maintenance jobs running `OPTIMIZE` to
 
 ```python
 # src/utils/optimize_tables.py
-from pyspark.sql import SparkSession
+from src.utils.spark import get_spark_session
 
-spark = SparkSession.builder.getOrCreate()
+spark = get_spark_session("Optimize Bronze")
 
 # Configure the target file size to 128MB (134217728 bytes)
 spark.conf.set("spark.databricks.delta.optimize.maxFileSize", "134217728")

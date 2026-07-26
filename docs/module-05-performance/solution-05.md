@@ -7,9 +7,9 @@ Here is the best-practice PySpark solution for optimizing the Credit Scores tabl
 Create this script at `apps/mortgage-data-platform/src/optimization/cluster_credit_scores.py`.
 
 ```python
-from pyspark.sql import SparkSession
+from src.utils.spark import get_spark_session
 
-spark = SparkSession.builder.appName("Optimize Credit Scores").getOrCreate()
+spark = get_spark_session("Optimize Credit Scores")
 
 # 1. Define the path to the Silver Credit Scores table
 silver_scores_path = "abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_credit_scores"
