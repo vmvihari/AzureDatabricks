@@ -1,4 +1,5 @@
 from pyspark.sql.types import IntegerType
+
 from src.bronze.ingest_credit_scores import get_credit_schema
 
 
