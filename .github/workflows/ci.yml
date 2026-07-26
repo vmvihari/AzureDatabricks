@@ -12,6 +12,9 @@ jobs:
   lint:
     name: Gate 2 - Lint (black, flake8, isort)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mortgage-data-platform
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -38,6 +41,9 @@ jobs:
   test:
     name: Gate 3 - Unit Tests (pytest)
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mortgage-data-platform
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout Code
@@ -67,4 +73,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: .coverage
+          path: apps/mortgage-data-platform/.coverage
