@@ -84,39 +84,51 @@ Let's build the extraction script for our operational database.
 
 ```python
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
 
-# Initialize Spark Session
-spark = SparkSession.builder.appName("IngestServicingBronze").getOrCreate()
+def extract_recent_events(df):
+    """
+    Filters out loan servicing events older than 2020.
+    Importing this function has zero side effects — safe for pytest.
+    """
+    return df.filter(col("event_year") >= 2020)
 
-# In a Databricks environment, dbutils is available by default.
-# For local testing, we would mock this.
-try:
-    db_user = dbutils.secrets.get(scope="mortgage-secrets", key="az-sql-user")
-    db_pass = dbutils.secrets.get(scope="mortgage-secrets", key="az-sql-pass")
-except NameError:
-    db_user = "mock_user"
-    db_pass = "mock_pass"
+if __name__ == "__main__":
+    # Initialize Spark Session
+    spark = SparkSession.builder.appName("IngestServicingBronze").getOrCreate()
 
-jdbc_url = "jdbc:sqlserver://az-sql-mortgage-db.database.windows.net:1433;database=MortgageServicing"
+    # In a Databricks environment, dbutils is available by default.
+    # For local testing, we would mock this.
+    try:
+        db_user = dbutils.secrets.get(scope="mortgage-secrets", key="az-sql-user")
+        db_pass = dbutils.secrets.get(scope="mortgage-secrets", key="az-sql-pass")
+    except NameError:
+        db_user = "mock_user"
+        db_pass = "mock_pass"
 
-# Read from JDBC
-df_servicing = (spark.read
-    .format("jdbc")
-    .option("url", jdbc_url)
-    .option("dbtable", "dbo.LoanServicingEvents")
-    .option("user", db_user)
-    .option("password", db_pass)
-    .option("partitionColumn", "event_id")
-    .option("lowerBound", "1")
-    .option("upperBound", "10000000")
-    .option("numPartitions", "10")
-    .load())
+    jdbc_url = "jdbc:sqlserver://az-sql-mortgage-db.database.windows.net:1433;database=MortgageServicing"
 
-# Write to Bronze Delta Table
-(df_servicing.write
-    .format("delta")
-    .mode("append")
-    .save("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_servicing_events"))
+    # Read from JDBC
+    df_servicing = (spark.read
+        .format("jdbc")
+        .option("url", jdbc_url)
+        .option("dbtable", "dbo.LoanServicingEvents")
+        .option("user", db_user)
+        .option("password", db_pass)
+        .option("partitionColumn", "event_id")
+        .option("lowerBound", "1")
+        .option("upperBound", "10000000")
+        .option("numPartitions", "10")
+        .load())
+        
+    # Apply filtering logic
+    df_recent_servicing = extract_recent_events(df_servicing)
+
+    # Write to Bronze Delta Table
+    (df_recent_servicing.write
+        .format("delta")
+        .mode("append")
+        .save("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_servicing_events"))
 ```
 
 ---
@@ -134,7 +146,9 @@ import sys
 import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql import Row
-from pyspark.sql.functions import col
+
+# Import the actual logic from our script
+from src.bronze.ingest_servicing_bronze import extract_recent_events
 
 # Fix for Windows: Ensure Spark uses the current Python executable
 os.environ['PYSPARK_PYTHON'] = sys.executable
@@ -143,10 +157,6 @@ os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
 @pytest.fixture(scope="session")
 def spark():
     return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
-
-# Example: We want to ensure our ingestion script filters out events older than 2020
-def extract_recent_events(df):
-    return df.filter(col("event_year") >= 2020)
 
 def test_jdbc_date_filtering(spark):
     # 1. Arrange: Create mock data using Spark SQL to bypass Python worker socket issues on Windows

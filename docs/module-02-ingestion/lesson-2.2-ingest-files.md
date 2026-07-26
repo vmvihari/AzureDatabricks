@@ -99,29 +99,37 @@ Now let's write our first actual pipeline script.
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DoubleType
 
-# Initialize Spark Session (Databricks runtime provides `spark` by default, but this is best practice)
-spark = SparkSession.builder.appName("IngestLoansBronze").getOrCreate()
+def get_loan_schema():
+    """
+    Returns the strict schema for loan applications.
+    Importing this function has zero side effects — safe for pytest.
+    """
+    return StructType([
+        StructField("loan_id", StringType(), True),
+        StructField("applicant_ssn", StringType(), True),
+        StructField("loan_amount", DoubleType(), True),
+        StructField("credit_score", IntegerType(), True)
+    ])
 
-# 1. Define strict schema
-loan_schema = StructType([
-    StructField("loan_id", StringType(), True),
-    StructField("applicant_ssn", StringType(), True),
-    StructField("loan_amount", DoubleType(), True),
-    StructField("credit_score", IntegerType(), True)
-])
+if __name__ == "__main__":
+    # Initialize Spark Session (Databricks runtime provides `spark` by default, but this is best practice)
+    spark = SparkSession.builder.appName("IngestLoansBronze").getOrCreate()
 
-# 2. Read from Landing Zone
-df_loans = (spark.read
-            .format("csv")
-            .option("header", "true")
-            .schema(loan_schema)
-            .load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/loan_applications/"))
+    # 1. Define strict schema
+    loan_schema = get_loan_schema()
 
-# 3. Write to Bronze Delta Table
-(df_loans.write
-    .format("delta")
-    .mode("append")
-    .save("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans"))
+    # 2. Read from Landing Zone
+    df_loans = (spark.read
+                .format("csv")
+                .option("header", "true")
+                .schema(loan_schema)
+                .load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/loan_applications/"))
+
+    # 3. Write to Bronze Delta Table
+    (df_loans.write
+        .format("delta")
+        .mode("append")
+        .save("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans"))
 ```
 
 ---
@@ -151,8 +159,11 @@ import sys
 import tempfile
 import pytest
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DoubleType
+from pyspark.sql.types import DoubleType
 from pyspark.sql import Row
+
+# Import the actual logic from our script
+from src.bronze.ingest_loans_bronze import get_loan_schema
 
 # Fix for Windows: Ensure Spark uses the current Python executable
 os.environ['PYSPARK_PYTHON'] = sys.executable
@@ -165,13 +176,8 @@ def spark():
     return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
 
 def test_bronze_schema_enforcement(spark):
-    # 1. Arrange: Define the exact schema we built in our ingestion script
-    loan_schema = StructType([
-        StructField("loan_id", StringType(), True),
-        StructField("applicant_ssn", StringType(), True),
-        StructField("loan_amount", DoubleType(), True),
-        StructField("credit_score", IntegerType(), True)
-    ])
+    # 1. Arrange: Import the EXACT schema we built in our ingestion script
+    loan_schema = get_loan_schema()
     
     # Create a mock CSV file (Bypasses PySpark RDD socket issues on Windows)
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix=".csv") as f:

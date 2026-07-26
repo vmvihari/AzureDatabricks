@@ -81,22 +81,29 @@ Let's build the decoupled Python extraction script.
 import requests
 import json
 
-# In a Databricks environment, dbutils is available by default.
-try:
-    api_token = dbutils.secrets.get(scope="mortgage-secrets", key="fraud-api-token")
-except NameError:
-    api_token = "mock_token"
+def fetch_fraud_blacklist(api_url, token):
+    """
+    Fetches the fraud blacklist from the external API.
+    Importing this function has zero side effects — safe for pytest.
+    """
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    response = requests.get(api_url, headers=headers)
+    response.raise_for_status()
+    return response.json()
 
-url = "https://api.fraud-detection-service.com/v1/blacklist"
-headers = {
-    "Authorization": f"Bearer {api_token}",
-    "Content-Type": "application/json"
-}
+if __name__ == "__main__":
+    # In a Databricks environment, dbutils is available by default.
+    try:
+        api_token = dbutils.secrets.get(scope="mortgage-secrets", key="fraud-api-token")
+    except NameError:
+        api_token = "mock_token"
 
-response = requests.get(url, headers=headers)
-
-if response.status_code == 200:
-    data = response.json()
+    url = "https://api.fraud-detection-service.com/v1/blacklist"
+    
+    data = fetch_fraud_blacklist(url, api_token)
     
     # In Databricks, we write to ADLS using standard python I/O by writing to the /dbfs mount or using dbutils.fs.put
     # For this exercise, we will assume dbutils.fs.put
@@ -107,8 +114,6 @@ if response.status_code == 200:
         print(f"Successfully landed API data to {destination_path}")
     except NameError:
         print(f"Local Mock: Would have written data to {destination_path}")
-else:
-    raise Exception(f"API request failed with status {response.status_code}")
 ```
 
 ---
@@ -127,15 +132,10 @@ pip install responses pytest
 
 ```python
 import pytest
-import requests
 import responses
 
-# The logic from our ingestion script, refactored into a testable function
-def fetch_fraud_blacklist(api_url, token):
-    headers = {"Authorization": f"Bearer {token}"}
-    response = requests.get(api_url, headers=headers)
-    response.raise_for_status()
-    return response.json()
+# Import the actual logic from our script
+from src.bronze.ingest_fraud_api import fetch_fraud_blacklist
 
 @responses.activate
 def test_fetch_fraud_blacklist_success():
