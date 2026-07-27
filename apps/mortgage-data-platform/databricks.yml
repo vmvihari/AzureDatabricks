@@ -1,0 +1,31 @@
+# apps/mortgage-data-platform/databricks.yml
+
+bundle:
+  name: mortgage-data-platform
+
+workspace:
+  host: <your_databricks_workspace_url>
+
+resources:
+  jobs:
+    mortgage_daily_etl:
+      name: "[DEV Integration Test] Mortgage Daily ETL"
+      tasks:
+        - task_key: "bronze_ingestion"
+          spark_python_task:
+            python_file: "src/dlt/autoloader_bronze.py"
+          job_cluster_key: "dev_cluster"
+        
+        - task_key: "silver_cleansing"
+          depends_on:
+            - task_key: "bronze_ingestion"
+          spark_python_task:
+            python_file: "src/silver/cleansed_loans.py"
+          job_cluster_key: "dev_cluster"
+          
+      job_clusters:
+        - job_cluster_key: "dev_cluster"
+          new_cluster:
+            spark_version: "14.3.x-scala2.12"
+            node_type_id: "Standard_DS3_v2"
+            num_workers: 1

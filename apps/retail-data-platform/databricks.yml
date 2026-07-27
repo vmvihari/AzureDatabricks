@@ -1,0 +1,25 @@
+# This is a Databricks asset bundle definition for the retail data platform.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+bundle:
+  name: retail-data-platform
+
+include:
+  - resources/*.yml
+
+targets:
+  # The 'dev' target, used for development purposes.
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: ${workspace.host}
+
+  # The 'prod' target, used for production deployment.
+  prod:
+    mode: production
+    workspace:
+      host: ${workspace.host}
+      root_path: /Shared/.bundle/prod/${bundle.name}
+    run_as:
+      # Use a service principal in prod. Replace client_id dynamically in CI/CD.
+      service_principal_name: ${workspace.client_id}

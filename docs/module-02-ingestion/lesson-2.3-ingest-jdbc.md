@@ -134,7 +134,7 @@ Let's build the extraction script for our operational database.
 5. Write the result to ADLS as a Delta table.
 
 ```python
-from pyspark.sql import SparkSession
+from src.utils.spark import get_spark_session
 from pyspark.sql.functions import col
 
 def extract_recent_events(df):
@@ -146,7 +146,7 @@ def extract_recent_events(df):
 
 if __name__ == "__main__":
     # Initialize Spark Session
-    spark = SparkSession.builder.appName("IngestServicingBronze").getOrCreate()
+    spark = get_spark_session("IngestServicingBronze")
 
     # In a Databricks environment, dbutils is available by default.
     # For local testing, we would mock this.
@@ -192,22 +192,10 @@ Because your local laptop cannot easily connect to the secured Azure SQL Server 
 2. Add the following code to simulate the database read and ensure your Spark SQL logic functions correctly:
 
 ```python
-import os
-import sys
 import pytest
-from pyspark.sql import SparkSession
-from pyspark.sql import Row
 
 # Import the actual logic from our script
 from src.bronze.ingest_servicing_bronze import extract_recent_events
-
-# Fix for Windows: Ensure Spark uses the current Python executable
-os.environ['PYSPARK_PYTHON'] = sys.executable
-os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
-
-@pytest.fixture(scope="session")
-def spark():
-    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
 
 def test_jdbc_date_filtering(spark):
     # 1. Arrange: Create mock data using Spark SQL to bypass Python worker socket issues on Windows

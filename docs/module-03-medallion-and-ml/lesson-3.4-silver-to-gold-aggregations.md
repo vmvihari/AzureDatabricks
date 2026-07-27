@@ -71,18 +71,9 @@ def aggregate_risk_by_state(df_silver):
 
 
 if __name__ == "__main__":
-    from pyspark.sql import SparkSession
-    from delta import configure_spark_with_delta_pip
+    from src.utils.spark import get_spark_session
 
-    # On Databricks Runtime, Delta is pre-configured. This builder pattern ensures
-    # the script also runs correctly in a local development environment.
-    builder = (
-        SparkSession.builder
-        .appName("StateRiskSummary")
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-    )
-    spark = configure_spark_with_delta_pip(builder).getOrCreate()
+    spark = get_spark_session("StateRiskSummary")
 
     df_silver = spark.read.format("delta").load("abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans")
 
@@ -107,28 +98,18 @@ As always, aggregation logic should be validated locally before it hits the Data
 5. Run `pytest tests/unit/test_gold_aggregations.py` to validate your math.
 
 ```python
-import os
-import sys
-import pytest
-from pyspark.sql import SparkSession
 from src.gold.state_risk_summary import aggregate_risk_by_state
-
-# Fix for Windows: Ensure Spark uses the current Python executable and IPv4 to avoid Socket errors
-os.environ['PYSPARK_PYTHON'] = sys.executable
-os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
-os.environ['_JAVA_OPTIONS'] = "-Djava.net.preferIPv4Stack=true"
-
-@pytest.fixture(scope="session")
-def spark():
-    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
 
 def test_aggregate_risk_by_state(spark):
     # Create the mock DataFrame using native Spark SQL
     # This completely bypasses PySpark's RDD Python worker socket on Windows
     df_in = spark.sql("""
-        SELECT 'TX' as state, CAST(100.0 AS DOUBLE) as loan_amount, True as is_fraud_flagged, 700 as credit_score UNION ALL
-        SELECT 'TX' as state, CAST(200.0 AS DOUBLE) as loan_amount, False as is_fraud_flagged, 720 as credit_score UNION ALL
-        SELECT 'CA' as state, CAST(500.0 AS DOUBLE) as loan_amount, False as is_fraud_flagged, 800 as credit_score
+        SELECT 'TX' as state, CAST(100.0 AS DOUBLE) as loan_amount,
+            True as is_fraud_flagged, 700 as credit_score UNION ALL
+        SELECT 'TX' as state, CAST(200.0 AS DOUBLE) as loan_amount,
+            False as is_fraud_flagged, 720 as credit_score UNION ALL
+        SELECT 'CA' as state, CAST(500.0 AS DOUBLE) as loan_amount,
+            False as is_fraud_flagged, 800 as credit_score
     """)
     
     df_out = aggregate_risk_by_state(df_in)

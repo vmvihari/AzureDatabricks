@@ -51,11 +51,11 @@ Let's upgrade our original Bronze ingestion script to use Auto Loader.
 3. Write the PySpark code to incrementally read the CSV loan applications using Auto Loader:
 ```python
 # apps/mortgage-data-platform/src/dlt/autoloader_bronze.py
-from pyspark.sql import SparkSession
+from src.utils.spark import get_spark_session
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType
 
 def run_autoloader():
-    spark = SparkSession.builder.appName("AutoLoaderBronze").getOrCreate()
+    spark = get_spark_session("AutoLoaderBronze")
     
     loan_schema = StructType([
         StructField("loan_id", StringType(), True),
@@ -100,7 +100,7 @@ import sys
 import pytest
 import shutil
 import tempfile
-from pyspark.sql import SparkSession
+from src.utils.spark import get_spark_session
 from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType
 
 os.environ['PYSPARK_PYTHON'] = sys.executable
@@ -109,8 +109,9 @@ os.environ['_JAVA_OPTIONS'] = "-Djava.net.preferIPv4Stack=true"
 
 @pytest.fixture(scope="session")
 def spark():
-    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
+    return get_spark_session("LocalTest")
 
+@pytest.mark.skipif(sys.platform == 'win32', reason="Spark local file I/O requires Hadoop winutils on Windows")
 def test_autoloader_memory_sink(spark):
     # Auto Loader testing requires writing actual files to a temp directory to simulate landing data
     temp_dir = tempfile.mkdtemp()

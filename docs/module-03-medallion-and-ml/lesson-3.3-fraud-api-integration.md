@@ -77,18 +77,9 @@ def flag_fraud(df_loans, df_blacklist):
 
 
 if __name__ == "__main__":
-    from pyspark.sql import SparkSession
-    from delta import configure_spark_with_delta_pip
+    from src.utils.spark import get_spark_session
 
-    # On Databricks Runtime, Delta is pre-configured. This builder pattern ensures
-    # the script also runs correctly in a local development environment.
-    builder = (
-        SparkSession.builder
-        .appName("FraudFlagging")
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-    )
-    spark = configure_spark_with_delta_pip(builder).getOrCreate()
+    spark = get_spark_session("FraudFlagging")
 
     df_silver = spark.read.format("delta").load("abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans")
     df_black = spark.read.format("json").load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/landing/fraud_blacklist/blacklist_today.json")
@@ -114,20 +105,7 @@ Just like the cleansing pipeline, this integration script should be tested befor
 5. Run `pytest tests/unit/test_fraud_flagging.py` in your local terminal to validate the join logic.
 
 ```python
-import os
-import sys
-import pytest
-from pyspark.sql import SparkSession
 from src.silver.fraud_flagging import flag_fraud
-
-# Fix for Windows: Ensure Spark uses the current Python executable and IPv4 to avoid Socket errors
-os.environ['PYSPARK_PYTHON'] = sys.executable
-os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
-os.environ['_JAVA_OPTIONS'] = "-Djava.net.preferIPv4Stack=true"
-
-@pytest.fixture(scope="session")
-def spark():
-    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
 
 def test_flag_fraud_broadcast_join(spark):
     # Create the mock DataFrames using native Spark SQL
@@ -144,10 +122,16 @@ def test_flag_fraud_broadcast_join(spark):
     df_flagged = flag_fraud(df_loans, df_blacklist)
     
     # Assert L-01 is False
-    assert df_flagged.filter(df_flagged.loan_id == "L-01").first()["is_fraud_flagged"] == False
+    assert (
+        df_flagged.filter(df_flagged.loan_id == "L-01").first()["is_fraud_flagged"]
+        is False
+    )
     
     # Assert L-02 is True
-    assert df_flagged.filter(df_flagged.loan_id == "L-02").first()["is_fraud_flagged"] == True
+    assert (
+        df_flagged.filter(df_flagged.loan_id == "L-02").first()["is_fraud_flagged"]
+        is True
+    )
 ```
 
 ---

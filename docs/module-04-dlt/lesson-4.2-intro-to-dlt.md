@@ -84,9 +84,9 @@ def bronze_loans():
 
 ## 5. 🛠️ Action Step: Validation & Testing
 
-As discussed in [Lesson 4.5: Asset Bundles](lesson-4.5-asset-bundles.md), you should test this pipeline using a Databricks Asset Bundle before deploying to production.
+As we will explore in-depth in [Lesson 4.5: Asset Bundles](lesson-4.5-asset-bundles.md), the modern way to deploy pipelines is using a Databricks Asset Bundle.
 
-1. Open your `databricks.yml` file.
+1. Create a `databricks.yml` file in the root of your `apps/mortgage-data-platform/` directory.
 2. Add a DLT pipeline deployment target to your Dev environment configuration.
 
 ```yaml

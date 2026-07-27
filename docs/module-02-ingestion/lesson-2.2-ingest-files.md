@@ -96,8 +96,8 @@ Now let's write our first actual pipeline script.
    `.write.format("delta").mode("append").save("abfss://bronze@.../tables/bronze_loans")`
 
 ```python
-from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DoubleType
+from src.utils.spark import get_spark_session
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType
 
 def get_loan_schema():
     """
@@ -112,8 +112,8 @@ def get_loan_schema():
     ])
 
 if __name__ == "__main__":
-    # Initialize Spark Session (Databricks runtime provides `spark` by default, but this is best practice)
-    spark = SparkSession.builder.appName("IngestLoansBronze").getOrCreate()
+    # Initialize Spark Session
+    spark = get_spark_session("IngestLoansBronze")
 
     # 1. Define strict schema
     loan_schema = get_loan_schema()
@@ -150,15 +150,26 @@ pip install pyspark pytest
 
 Before you can import from your `src` directory in a test, Python needs two things in place. **Do this once at the start of the project — you will not need to repeat it for future lessons.**
 
-**Step A:** Create a `conftest.py` at the root of `apps/mortgage-data-platform/`. This tells `pytest` to add the project root to Python's module search path:
+**Step A:** Create a `conftest.py` at the root of `apps/mortgage-data-platform/`. This tells `pytest` to add the project root to Python's module search path, and creates a universal `spark` fixture that all tests can share automatically:
 
 ```python
 # apps/mortgage-data-platform/conftest.py
 import sys
 import os
+import pytest
+from pyspark.sql import SparkSession
 
 # Add the project root to sys.path so that `from src.X.Y import Z` imports work
 sys.path.insert(0, os.path.dirname(__file__))
+
+# Fix for Windows: Ensure Spark uses the current Python executable
+os.environ["PYSPARK_PYTHON"] = sys.executable
+os.environ["PYSPARK_DRIVER_PYTHON"] = sys.executable
+
+@pytest.fixture(scope="session")
+def spark():
+    """Spins up a lightning-fast, local-only Spark session in your laptop's RAM."""
+    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
 ```
 
 **Step B:** Create empty `__init__.py` files to make each `src` subdirectory a proper Python package. Without these, Python does not recognize them as importable modules:
@@ -168,6 +179,9 @@ apps/mortgage-data-platform/
 ├── conftest.py          ← created in Step A
 └── src/
     ├── __init__.py      ← create this
+    ├── utils/
+    │   ├── __init__.py  ← create this
+    │   └── spark.py     ← create this
     └── bronze/
         └── __init__.py  ← create this
 ```
@@ -175,6 +189,14 @@ apps/mortgage-data-platform/
 Each `__init__.py` can simply contain a single comment:
 ```python
 # package marker
+```
+
+**Step C:** Create a shared Spark configuration utility so we don't duplicate code in every ingestion script. In `apps/mortgage-data-platform/src/utils/spark.py`, add:
+```python
+from pyspark.sql import SparkSession
+
+def get_spark_session(app_name="MortgageDataPlatform"):
+    return SparkSession.builder.appName(app_name).getOrCreate()
 ```
 
 > [!NOTE]
@@ -189,25 +211,12 @@ In order to test our script without actually hitting the ADLS cloud storage, we 
 
 ```python
 import os
-import sys
 import tempfile
 import pytest
-from pyspark.sql import SparkSession
 from pyspark.sql.types import DoubleType
-from pyspark.sql import Row
 
 # Import the actual logic from our script
 from src.bronze.ingest_loans_bronze import get_loan_schema
-
-# Fix for Windows: Ensure Spark uses the current Python executable
-os.environ['PYSPARK_PYTHON'] = sys.executable
-os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
-os.environ['_JAVA_OPTIONS'] = "-Djava.net.preferIPv4Stack=true"
-
-@pytest.fixture(scope="session")
-def spark():
-    """Spins up a lightning-fast, local-only Spark session in your laptop's RAM."""
-    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
 
 def test_bronze_schema_enforcement(spark):
     # 1. Arrange: Import the EXACT schema we built in our ingestion script

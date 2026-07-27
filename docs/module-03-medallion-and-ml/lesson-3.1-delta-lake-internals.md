@@ -61,17 +61,19 @@ However, following our **Production Standard** (local IDE development), you must
    ```bash
    pip install delta-spark
    ```
-2. **Configure the Spark Session:** When building local PySpark scripts (before we hook them up to Databricks Connect in Lesson 3.5), you must explicitly add the Delta extensions to your SparkSession:
+2. **Update the Shared Spark Configuration:** Since we centralized our Spark setup in Module 2, you just need to update `src/utils/spark.py` to include the Delta extensions:
    ```python
    from pyspark.sql import SparkSession
    from delta import configure_spark_with_delta_pip
 
-   builder = SparkSession.builder.appName("Delta Sandbox") \
-       .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
-       .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+   def get_spark_session(app_name="MortgageDataPlatform"):
+       builder = SparkSession.builder.appName(app_name) \
+           .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
+           .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
 
-   spark = configure_spark_with_delta_pip(builder).getOrCreate()
+       return configure_spark_with_delta_pip(builder).getOrCreate()
    ```
+   *Make sure to also apply this exact same `configure_spark_with_delta_pip` logic to your `spark` fixture in `conftest.py` so your Pytest suite can test Delta logic locally.*
 
 *(Note: Always use the `abfss://` protocol in your paths to write your Delta tables directly to Azure Data Lake Storage, never to the local filesystem or DBFS).*
 

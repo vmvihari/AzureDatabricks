@@ -1,0 +1,33 @@
+# Definition for the Bronze ingestion DLT pipeline
+resources:
+  pipelines:
+    retail_bronze_pipeline:
+      name: retail_cdc_bronze_pipeline_${bundle.target}
+      edition: ADVANCED
+      catalog: main
+      target: retail_bronze_${bundle.target}
+      
+      libraries:
+        # Note: In standard bundles, you can deploy .py scripts as notebooks or pure scripts depending on Databricks version. 
+        # But we'll reference the python file as a standard DLT notebook entrypoint.
+        - file:
+            path: ../src/bronze/ingest_cdc_bronze.py
+            
+      configuration:
+        # Configuration variables passed into the pipeline execution environment
+        # The path where Azure Data Factory (ADF) drops the raw CDC JSON/Parquet files
+        # In a real environment, this might be parameterized per environment (dev vs prod)
+        ADF_DROP_ZONE_PATH: "abfss://landing@dummy_storage.dfs.core.windows.net/retail_cdc"
+        
+      clusters:
+        - label: default
+          autoscale:
+            min_workers: 1
+            max_workers: 3
+          node_type_id: Standard_DS3_v2
+
+      # Triggered vs Continuous execution
+      continuous: false
+      
+      # During development, Databricks runs the pipeline in dev mode (reusing clusters)
+      development: true

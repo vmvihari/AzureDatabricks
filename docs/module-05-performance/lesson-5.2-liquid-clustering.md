@@ -49,9 +49,9 @@ Our `silver_loans` table is frequently queried by State and by Loan Status. Let'
 3. Run the `OPTIMIZE` command to actually rewrite the data into the clustered layout.
 
 ```python
-from pyspark.sql import SparkSession
+from src.utils.spark import get_spark_session
 
-spark = SparkSession.builder.getOrCreate()
+spark = get_spark_session("Cluster Silver")
 silver_path = "abfss://silver@stmortgagedata<your_initials>.dfs.core.windows.net/tables/silver_loans"
 
 # 1. Enable Liquid Clustering on the key columns

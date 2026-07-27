@@ -76,18 +76,9 @@ def cleanse_loans(df):
 
 
 if __name__ == "__main__":
-    from pyspark.sql import SparkSession
-    from delta import configure_spark_with_delta_pip
+    from src.utils.spark import get_spark_session
 
-    # On Databricks Runtime, Delta is pre-configured. This builder pattern ensures
-    # the script also runs correctly in a local development environment.
-    builder = (
-        SparkSession.builder
-        .appName("CleanseLoansSilver")
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-        .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
-    )
-    spark = configure_spark_with_delta_pip(builder).getOrCreate()
+    spark = get_spark_session("CleanseLoansSilver")
 
     df_bronze = spark.read.format("delta").load("abfss://bronze@stmortgagedata<your_initials>.dfs.core.windows.net/tables/bronze_loans")
     df_silver = cleanse_loans(df_bronze)
@@ -112,20 +103,7 @@ As discussed in Module 2, you must test your transformation logic locally before
 4. Run `pytest tests/unit/test_silver_cleansing.py` in your local terminal to validate your code.
 
 ```python
-import os
-import sys
-import pytest
-from pyspark.sql import SparkSession
 from src.silver.cleansed_loans import cleanse_loans
-
-# Fix for Windows: Ensure Spark uses the current Python executable and IPv4 to avoid Socket errors
-os.environ['PYSPARK_PYTHON'] = sys.executable
-os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
-os.environ['_JAVA_OPTIONS'] = "-Djava.net.preferIPv4Stack=true"
-
-@pytest.fixture(scope="session")
-def spark():
-    return SparkSession.builder.master("local[1]").appName("LocalTest").getOrCreate()
 
 def test_cleansing_drops_null_ssns_and_formats_strings(spark):
     # Create the mock DataFrame using native Spark SQL
